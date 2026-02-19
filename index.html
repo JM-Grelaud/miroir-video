@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Miroir Vidéo - L'outil gratuit d'auto-analyse pour archers. Visualisez votre geste en temps différé.">
+<title>Miroir Vidéo - L'outil gratuit pour archers</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    :root {
+        --primary: grey;
+        --primary-dark: black;
+        --secondary: lightgrey;
+        --success: #28a745;
+        --text: #2c3e50;
+        --text-light: #6c757d;
+        --bg-light: #f8f9fa;
+    }
+    
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1;
+        color: var(--text);
+    }
+    
+    /* HEADER */
+    header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white;
+        padding: 10px 10px;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    
+    header h1 {
+        font-size: 2.8em;
+        margin-bottom: 8px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    header .version {
+        font-size: 1em;
+        opacity: 0.9;
+        margin-bottom: 12px;
+    }
+    
+    header .tagline {
+        font-size: 1.2em;
+        margin-top: 12px;
+        font-weight: 300;
+    }
+    
+    header .cta-header {
+        margin-top: 25px;
+    }
+    
+    header .btn-header {
+        display: inline-block;
+        background: white;
+        color: var(--primary);
+        padding: 12px 30px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 1em;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(255,255,255,0.3);
+    }
+    
+    header .btn-header:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(255,255,255,0.5);
+    }
+    
+    /* CONTAINER */
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 10px;
+    }
+    
+    /* SECTION TÉLÉCHARGEMENT */
+    .download-section {
+        background: var(--bg-light);
+        padding: 12.5px 5px;
+        text-align: center;
+    }
+    
+    .download-section h2 {
+        font-size: 2em;
+        color: var(--text);
+        margin-bottom: 7.5px;
+    }
+    
+    .download-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 6px;
+        margin-top: 7.5px;
+    }
+    
+    .download-card {
+        background: white;
+        padding: 7.5px 5px;
+        border-radius: 3px;
+        transition: all 0.3s;
+        border: 1px solid transparent;
+    }
+    
+    .download-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12.5px rgba(0,0,0,0.12);
+        border-color: var(--primary);
+    }
+    
+    .download-card-icon {
+        font-size: 3em;
+        margin-bottom: 7.5px;
+    }
+    
+    .download-card h3 {
+        font-size: 1.4em;
+        margin-bottom: 6px;
+        color: var(--text);
+    }
+    
+    .download-card p {
+        color: var(--text-light);
+        margin-bottom: 10px;
+        font-size: 0.95em;
+    }
+    
+    .download-btn {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        padding: 6px 15px;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 1em;
+        transition: all 0.3s;
+        box-shadow: 0 2px 7.5px rgba(102, 126, 234, 0.4);
+    }
+    
+    .download-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 3px 10px rgba(102, 126, 234, 0.6);
+    }
+    
+    .download-btn.secondary {
+        background: white;
+        color: var(--primary);
+        border: 1px solid var(--primary);
+        box-shadow: none;
+    }
+    
+    .download-btn.secondary:hover {
+        background: var(--primary);
+        color: white;
+    }
+    
+    /* FEATURES SECTION */
+    .features-section {
+        background: white;
+        padding: 25px 10px;
+    }
+    
+    .features-section h2 {
+        text-align: center;
+        font-size: 2em;
+        margin-bottom: 17.5px;
+        color: var(--text);
+    }
+    
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 10px;
+    }
+    
+    .feature-card {
+        background: var(--bg-light);
+        padding: 12.5px 10px;
+        border-radius: 4px;
+        text-align: center;
+        transition: transform 0.3s;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 2px 87.px rgba(0,0,0,0.08);
+    }
+    
+    .feature-icon {
+        font-size: 2.5em;
+        margin-bottom: 6px;
+    }
+    
+    .feature-card h3 {
+        font-size: 1.3em;
+        margin-bottom: 5px;
+        color: var(--primary);
+    }
+    
+    .feature-card p {
+        color: var(--text-light);
+        font-size: 0.95em;
+    }
+    
+    .cta-link {
+        display: inline-block;
+        margin-top: 12.5px;
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 1em;
+        transition: all 0.3s;
+    }
+    
+    .cta-link:hover {
+        color: var(--primary-dark);
+        transform: scale(1.05);
+    }
+    
+    .cta-link::after {
+        content: ' →';
+    }
+    
+    /* HOW IT WORKS */
+    .how-it-works {
+        background: var(--bg-light);
+        padding: 25px 10px;
+    }
+    
+    .how-it-works h2 {
+        text-align: center;
+        font-size: 2em;
+        margin-bottom: 17.5px;
+        color: var(--text);
+    }
+    
+    .steps {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+        gap: 15px;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .step {
+        text-align: center;
+        position: relative;
+    }
+    
+    .step-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 25px;
+        height: 25px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        border-radius: 50%;
+        font-size: 1.5em;
+        font-weight: bold;
+        margin-bottom: 7.5px;
+    }
+    
+    .step h3 {
+        font-size: 1.2em;
+        margin-bottom: 4px;
+        color: var(--text);
+    }
+    
+    .step p {
+        color: var(--text-light);
+        font-size: 0.95em;
+    }
+    
+    /* TESTIMONIALS */
+    .testimonials {
+        background: white;
+        padding: 25px 10px;
+    }
+    
+    .testimonials h2 {
+        text-align: center;
+        font-size: 2em;
+        margin-bottom: 17.5px;
+        color: var(--text);
+    }
+    
+    .testimonials-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 10px;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .testimonial {
+        background: var(--bg-light);
+        padding: 10px;
+        border-radius: 4px;
+        border-left: 1px solid var(--primary);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    
+    .testimonial-text {
+        font-style: italic;
+        margin-bottom: 6px;
+        font-size: 0.95em;
+        color: var(--text);
+    }
+    
+    .testimonial-author {
+        color: var(--text-light);
+        font-weight: bold;
+        font-size: 0.9em;
+    }
+    
+    .testimonial-stars {
+        color: #ffc107;
+        margin-bottom: 4px;
+        font-size: 1em;
+    }
+    
+    /* CTA SECTION */
+    .cta-section {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        padding: 25px 10px;
+        text-align: center;
+    }
+    
+    .cta-section h2 {
+        font-size: 2em;
+        margin-bottom: 7.5px;
+    }
+    
+    .cta-section p {
+        font-size: 1.1em;
+        margin-bottom: 15px;
+        opacity: 0.9;
+    }
+    
+    .cta-buttons {
+        display: flex;
+        gap: 7.5px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .cta-btn {
+        display: inline-block;
+        background: white;
+        color: var(--primary);
+        padding: 6px 17.5px;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 1em;
+        transition: all 0.3s;
+    }
+    
+    .cta-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 3px 10px rgba(255,255,255,0.3);
+    }
+    
+    /* FOOTER */
+    footer {
+        background: #2c3e50;
+        color: white;
+        padding: 15px 10px;
+        text-align: center;
+    }
+    
+    footer p {
+        margin: 8px 0;
+        opacity: 0.9;
+        font-size: 0.95em;
+    }
+    
+    footer a {
+        color: #3498db;
+        text-decoration: none;
+    }
+    
+    footer a:hover {
+        text-decoration: underline;
+    }
+    
+    /* SPECIFICATIONS */
+    .specs {
+        background: var(--bg-light);
+        padding: 50px 20px;
+    }
+    
+    .specs h2 {
+        text-align: center;
+        font-size: 2em;
+        margin-bottom: 30px;
+        color: var(--text);
+    }
+    
+    .specs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 15px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .spec-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: white;
+        border-radius: 6px;
+    }
+    
+    .spec-icon {
+        font-size: 1.8em;
+    }
+    
+    .spec-text {
+        flex: 1;
+    }
+    
+    .spec-text strong {
+        display: block;
+        color: var(--text);
+        margin-bottom: 3px;
+        font-size: 0.95em;
+    }
+    
+    .spec-text span {
+        color: var(--text-light);
+        font-size: 0.85em;
+    }
+    
+    @media (max-width: 768px) {
+        header h1 {
+            font-size: 2em;
+        }
+        
+        header .tagline {
+            font-size: 1em;
+        }
+        
+        .download-grid, .features-grid, .steps, .testimonials-grid, .specs-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .cta-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        section {
+            padding: 16.5px 7.5px;
+        }
+        
+        h2 {
+            font-size: 1.6em;
+        }
+    }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <h1>🏹 Miroir Vidéo</h1>
+    <div class="version">Version 3.7.0 | 18 janvier 2026</div>
+    <p class="tagline">L'outil gratuit d'auto-analyse pour archers<br>Visualisez votre geste en temps différé</p>
+    <div class="cta-header">
+        <a href="https://www.lesarchersdelaille.com/en-savoir-plus/bac-a-sable-128389/#telechargements" class="btn-header">📥 Télécharger maintenant</a>
+    </div>
+</header>
+
+<!-- FONCTIONNALITÉS -->
+<section class="features-section">
+    <div class="container">
+        <h2>✨ Fonctionnalités Principales</h2>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⏱️</div>
+                <h3>Délai Réglable</h3>
+                <p>Choisissez un délai de 3 à 11 secondes pour adapter l'outil à votre type d'entraînement.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>7 Couleurs de Grille</h3>
+                <p>Blanc, Jaune, Vert, Bleu, Rouge, Orange, Magenta : adaptez la grille à votre environnement.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📷</div>
+                <h3>Multi-Caméras</h3>
+                <p>Basculez facilement entre vos différentes webcams pour varier les angles de vue.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>100% Privé</h3>
+                <p>Aucune vidéo enregistrée, aucune donnée transmise. Traitement 100% local dans votre navigateur.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🆓</div>
+                <h3>Totalement Gratuit</h3>
+                <p>Pas d'abonnement, pas de publicité, pas de limitations. Libre et open source.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🖥️</div>
+                <h3>Installation Simple</h3>
+                <p>Programme d'installation Windows automatique. Double-clic et c'est installé ! Raccourci bureau inclus.<br><em>Il existe une alternative pour Mac et Linux.</em></p>
+            </div>
+        </div>
+        
+        <div style="text-align: center;">
+			<a href="https://www.lesarchersdelaille.com/en-savoir-plus/bac-a-sable-128389/#telechargements" class="btn-header">📥 Télécharger maintenant</a>
+        </div>
+    </div>
+</section>
+
+<!-- COMMENT ÇA MARCHE -->
+<section class="how-it-works">
+    <div class="container">
+        <h2>🎯 Comment ça marche ?</h2>
+        
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Installez</h3>
+                <p>Téléchargez l'installateur Windows et exécutez-le. L'installation est automatique et crée un raccourci bureau.<br><em>Il existe une alternative pour Mac et Linux.</em></p>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Positionnez</h3>
+                <p>Placez votre appareil face à votre pas de tir. Utilisez la grille pour vous cadrer parfaitement.</p>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Tirez</h3>
+                <p>Effectuez votre tir normalement, concentré sur votre cible et votre technique.</p>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">4</div>
+                <h3>Observez</h3>
+                <p>7 secondes après, votre geste s'affiche à l'écran. Analysez et corrigez !</p>
+            </div>
+        </div>
+        
+        <div style="text-align: center;">
+			<a href="https://www.lesarchersdelaille.com/en-savoir-plus/bac-a-sable-128389/#telechargements" class="btn-header">📥 Télécharger maintenant</a>
+        </div>
+    </div>
+</section>
+
+<!-- SPÉCIFICATIONS -->
+<section class="specs">
+    <div class="container">
+        <h2>📋 Spécifications Techniques</h2>
+        
+        <div class="specs-grid">
+            <div class="spec-item">
+                <div class="spec-icon">💻</div>
+                <div class="spec-text">
+                    <strong>Système</strong>
+                    <span>Windows 10 / 11 (64 bits)</span>
+                </div>
+            </div>
+            
+            <div class="spec-item">
+                <div class="spec-icon">🌐</div>
+                <div class="spec-text">
+                    <strong>Navigateurs</strong>
+                    <span>Chrome, Firefox, Edge, Safari (récents)</span>
+                </div>
+            </div>
+            
+            <div class="spec-item">
+                <div class="spec-icon">📹</div>
+                <div class="spec-text">
+                    <strong>Résolution</strong>
+                    <span>Jusqu'à 1280x720 (HD) à 30 fps</span>
+                </div>
+            </div>
+            
+            <div class="spec-item">
+                <div class="spec-icon">💾</div>
+                <div class="spec-text">
+                    <strong>Taille</strong>
+                    <span>~5 Mo (installateur auto-extractible)</span>
+                </div>
+            </div>
+            
+            <div class="spec-item">
+                <div class="spec-icon">⚡</div>
+                <div class="spec-text">
+                    <strong>Performance</strong>
+                    <span>Fluide même sur matériel modeste</span>
+                </div>
+            </div>
+            
+            <div class="spec-item">
+                <div class="spec-icon">🔓</div>
+                <div class="spec-text">
+                    <strong>Licence</strong>
+                    <span>Open Source - Utilisation libre</span>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center;">
+			<a href="https://www.lesarchersdelaille.com/en-savoir-plus/bac-a-sable-128389/#telechargements" class="btn-header">📥 Télécharger maintenant</a>
+        </div>
+    </div>
+</section>
+
+<!-- TÉMOIGNAGES -->
+<section class="testimonials">
+    <div class="container">
+        <h2>💬 Ils l'utilisent déjà</h2>
+        
+        <div class="testimonials-grid">
+            <div class="testimonial">
+                <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text">"J'ai enfin compris pourquoi mon épaule remontait à chaque tir. Indispensable pour progresser en solo !"</p>
+                <p class="testimonial-author">— Christophe, Arc Classique</p>
+            </div>
+            
+            <div class="testimonial">
+                <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text">"Parfait pour mon entraînement à domicile. Simple, efficace, et gratuit. Que demander de plus ?"</p>
+                <p class="testimonial-author">— Isabelle, Arc Nu</p>
+            </div>
+            
+            <div class="testimonial">
+                <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text">"Outil créé pour notre club, nos jeunes adorent ! Un vrai plus pour nos séances d'entraînement."</p>
+                <p class="testimonial-author">— Club de Laillé</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- TÉLÉCHARGEMENTS -->
+<section class="download-section" id="telechargements">
+    <div class="container">
+        <h2>📥 Téléchargements</h2>
+        <p style="font-size: 1em; color: var(--text-light); margin-bottom: 20px;">
+            Tout ce dont vous avez besoin pour démarrer
+        </p>
+        
+        <div class="download-grid">
+            <!-- APPLICATION -->
+            <div class="download-card">
+                <div class="download-card-icon">🚀</div>
+                <h3>Application Windows</h3>
+                <p>Programme d'installation pour Windows. Double-cliquez pour installer et profitez d'un raccourci sur votre bureau.</p>
+                <a href="./MiroirVideo_v3.7.0_Setup.exe" class="download-btn" download>
+                    Télécharger pour Windows
+                </a>
+                <p style="font-size: 0.85em; margin-top: 12px; color: var(--text-light);">
+                    Installateur EXE | Gratuit | ~5 Mo
+                </p>
+                <p style="font-size: 0.8em; margin-top: 8px; color: var(--text-light);">
+                    ✅ Windows 10/11 | 💾 Installation automatique
+                </p>
+            </div>
+            
+            <!-- MANUEL UTILISATEUR -->
+            <div class="download-card">
+                <div class="download-card-icon">📖</div>
+                <h3>Manuel Utilisateur</h3>
+                <p>Guide complet d'utilisation pas à pas, résolution des problèmes, conseils d'entraînement et FAQ détaillée.</p>
+                <a href="./MiroirVideo_Manuel_Utilisateur.pdf" class="download-btn secondary" target="_blank">
+                    Consulter le Manuel
+                </a>
+                <p style="font-size: 0.85em; margin-top: 12px; color: var(--text-light);">
+                    PDF | 2,8 Mo | 45 pages
+                </p>
+            </div>
+            
+            <!-- DOCUMENTATION TECHNIQUE -->
+            <div class="download-card">
+                <div class="download-card-icon">⚙️</div>
+                <h3>Documentation Technique</h3>
+                <p>Spécifications complètes, architecture logicielle, schémas techniques.</p>
+                <a href="./MiroirVideo_Documentation_Technique.pdf" class="download-btn secondary" target="_blank">
+                    Consulter la Documentation
+                </a>
+                <p style="font-size: 0.85em; margin-top: 12px; color: var(--text-light);">
+                    PDF | 3,5 Mo | 68 pages
+                </p>
+            </div>
+        </div>
+        
+        <div style="max-width: 750px; margin: 15px auto 0; padding: 7.5px; background: #fafad2; border-left: 4px solid #2196f3; border-radius: 3px;">
+            <p style="margin: 0; color: var(--text); font-size: 0.95em;"><strong>📌 Note pour les utilisateurs Mac, Linux <em>ou mobile (sous réserve)</em> :</strong></p>
+            <p style="margin: 8px 0 0; color: var(--text-light); font-size: 0.9em;">
+                Pour plus de simplicité, l'installateur Windows encapsule l'application web <em>(ainsi que les fichiers associés)</em>.<br>Si vous utilisez un autre système d'exploitation, 
+                un fichier ZIP équivalent est disponible sur demande. A décompresser dans un répertoire de votre appareil.<br>Ensuite, il suffit de lancer le fichier HTML qu'il contient pour que cela fnctionne directement dans votre navigateur, sans installation.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="container">
+        <p><strong>Miroir Vidéo V3.7.0</strong></p>
+        <p>© 2023-2026 | Jean-Michel Grelaud <em>(pour les <a href="https://learchersdelaille.com" target="_blank">Archers de Laillé</em></a>)</p>
+        <p style="margin-top: 15px;">
+            Développé avec ❤️ par un archer, pour les archers
+        </p>
+        <p style="margin-top: 15px; font-size: 0.85em; opacity: 0.7;">
+            Projet open source | <a href="mailto:jeanmichel.grelaaud+MiroirVideo@gmail.com">Contact</a> | <a href="#">Mentions légales</a>
+        </p>
+    </div>
+</footer>
+
+</body>
+</html>
