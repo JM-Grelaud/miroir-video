@@ -712,6 +712,18 @@
                     PDF | 498 Ko | 9 pages
                 </p>
             </div>
+
+<div class="download-container">
+	<button class="btn-download" 
+			data-key="MiroirVideo-MU1" 
+			data-url="https://jm-grelaud.github.io/miroir-video/Miroir%20Vid%C3%A9o-Manuel%20Utilisateur.pdf">
+		Télécharger le Manuel Utilisaatuer
+	</button>
+	<div class="counter-info">
+		Téléchargé <span id="count-MiroirVideo-MU" class="counter-number">...</span> fois
+	</div>
+</div>
+			
         </div>
         
         <div style="max-width: 750px; margin: 15px auto 0; padding: 7.5px; background: #fafad2; border-left: 4px solid #2196f3; border-radius: 3px;">
@@ -738,5 +750,66 @@
     </div>
 </footer>
 
+    <script>
+        // Remplacez par votre domaine pour isoler vos compteurs
+        const NAMESPACE = "Miroir-Video"; 
+
+        // 1. Initialisation : Charger les chiffres actuels au démarrage de la page
+        document.querySelectorAll('.btn-download').forEach(btn => {
+            const key = btn.getAttribute('data-key');
+            const display = document.getElementById(`count-${key}`);
+
+            fetch(`https://api.countapi.xyz/get/${NAMESPACE}/${key}`)
+                .then(res => res.json())
+                .then(res => {
+                    if(display) display.innerText = res.value || 0;
+                })
+                .catch(() => {
+                    if(display) display.innerText = "0";
+                });
+        });
+
+        // 2. Gestion universelle des clics
+        document.addEventListener('click', function(event) {
+            // Vérifie si on a cliqué sur un bouton de téléchargement
+            if (event.target.classList.contains('btn-download')) {
+                const btn = event.target;
+                const key = btn.getAttribute('data-key');
+                const fileUrl = btn.getAttribute('data-url');
+                const display = document.getElementById(`count-${key}`);
+                
+                let downloadStarted = false;
+
+                // Fonction de sécurité pour lancer le téléchargement
+                function triggerDownload() {
+                    if (!downloadStarted) {
+                        downloadStarted = true;
+                        // Optionnel : petit feedback visuel
+                        const originalText = btn.innerText;
+                        btn.innerText = "Merci !";
+                        setTimeout(() => btn.innerText = originalText, 2000);
+                        
+                        // Lancement effectif
+                        window.location.href = fileUrl;
+                    }
+                }
+
+                // Incrémentation via l'API
+                fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${key}`)
+                    .then(res => res.json())
+                    .then(res => {
+                        if(display) display.innerText = res.value;
+                        triggerDownload();
+                    })
+                    .catch(() => {
+                        // En cas d'erreur API ou bloqueur, on télécharge quand même
+                        triggerDownload();
+                    });
+
+                // Sécurité : si l'API ne répond pas dans la seconde, on force
+                setTimeout(triggerDownload, 1000);
+            }
+        });
+    </script>	
 </body>
 </html>
