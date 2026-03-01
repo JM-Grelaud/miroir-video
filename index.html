@@ -671,10 +671,7 @@
                 <p class="testimonial-author">— Club de Laillé</p>
             </div>
         </div>
-    </div>
-</section>
-
-<section class="download-section" id="telechargements">
+    </div><section class="download-section" id="telechargements">
     <div class="container">
         <h2>📥 Téléchargements</h2>
         <p style="font-size: 1em; color: var(--text-light); margin-bottom: 20px;">
@@ -687,14 +684,11 @@
                 <h3>Application Windows</h3>
                 <p>Programme d'installation pour Windows. Double-cliquez pour installer.</p>
                 <div class="download-wrapper">
-                    <button class="download-btn btn-counter" 
-                            data-gc-id="app-win" 
-                            data-url="./Installer%20Miroir%20Vid%C3%A9o%203.7.0.exe">
+                    <a href="./Installer%20Miroir%20Vid%C3%A9o%203.7.0.exe" 
+                       class="download-btn btn-counter" 
+                       data-gc-id="app-win">
                         Télécharger pour Windows
-                    </button>
-                    <div class="counter-info">
-                        Téléchargé <span id="count-app-win" class="counter-number">0</span> fois
-                    </div>
+                    </a>
                 </div>
                 <p style="font-size: 0.85em; margin-top: 12px; color: var(--text-light);">
                     Installateur EXE | Gratuit | ~2245 ko
@@ -706,14 +700,12 @@
                 <h3>Manuel Utilisateur</h3>
                 <p>Guide complet d'utilisation pas à pas, résolution des problèmes.</p>
                 <div class="download-wrapper">
-                    <button class="download-btn secondary btn-counter" 
-                            data-gc-id="manuel" 
-                            data-url="./Miroir Vidéo-Manuel Utilisateur.pdf">
+                    <a href="./Miroir Vidéo-Manuel Utilisateur.pdf" 
+                       target="_blank" 
+                       class="download-btn secondary btn-counter" 
+                       data-gc-id="manuel">
                         Consulter le Manuel
-                    </button>
-                    <div class="counter-info">
-                        Consulté <span id="count-manuel" class="counter-number">0</span> fois
-                    </div>
+                    </a>
                 </div>
                 <p style="font-size: 0.85em; margin-top: 12px; color: var(--text-light);">
                     PDF | 443 Ko | 12 pages
@@ -725,14 +717,12 @@
                 <h3>Documentation Technique</h3>
                 <p>Spécifications complètes, architecture logicielle.</p>
                 <div class="download-wrapper">
-                    <button class="download-btn secondary btn-counter" 
-                            data-gc-id="doc-tech" 
-                            data-url="./Miroir Vidéo-Documentation Technique.pdf">
+                    <a href="./Miroir Vidéo-Documentation Technique.pdf" 
+                       target="_blank" 
+                       class="download-btn secondary btn-counter" 
+                       data-gc-id="doc-tech">
                         Consulter la Doc
-                    </button>
-                    <div class="counter-info">
-                        Consultée <span id="count-doc-tech" class="counter-number">0</span> fois
-                    </div>
+                    </a>
                 </div>
                 <p style="font-size: 0.85em; margin-top: 12px; color: var(--text-light);">
                     PDF | 498 Ko | 9 pages
@@ -748,57 +738,28 @@
         </div>
     </div>
 </section>
+	
+<script data-goatcounter="https://jgrmiroirvideo.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 
-<script data-goatcounter="https://jgrmiroirvideo.goatcounter.com/count"
-        async src="//gc.zgo.at/count.js"></script>
 <script>
-    window.addEventListener('load', function() {
-        const GC_CODE = "jgrmiroirvideo";
-
-        // 1. Récupération des totaux avec gestion d'erreur CORS
-        document.querySelectorAll('.counter-number').forEach(span => {
-            const key = span.id.replace('count-', '');
+    document.addEventListener('click', function(e) {
+        // On cherche si on a cliqué sur un élément avec la classe btn-counter
+        const btn = e.target.closest('.btn-counter');
+        if (btn) {
+            const key = btn.getAttribute('data-gc-id');
             
-            // On ajoute no-cors ou on gère l'erreur pour éviter les messages rouges dans la console
-            fetch(`https://${GC_CODE}.goatcounter.com/counter/${encodeURIComponent(key)}.json`)
-                .then(response => {
-                    if (!response.ok) throw new Error('CORS or Not Found');
-                    return response.json();
-                })
-                .then(data => {
-                    // On affiche le compte si disponible, sinon on garde le texte par défaut
-                    span.innerText = data.count || "0";
-                })
-                .catch(err => {
-                    console.log("Note: Affichage du compteur public restreint par la politique CORS.");
-                    span.innerText = "-"; // On affiche un tiret au lieu de "..." pour faire propre
+            // Envoi de l'événement à GoatCounter
+            if (window.goatcounter && window.goatcounter.count) {
+                window.goatcounter.count({
+                    path: key,
+                    title: 'Clic: ' + key,
+                    event: true
                 });
-        });
-
-        // 2. Envoi du clic (Ceci fonctionne toujours, car c'est une balise <script> externe)
-        document.addEventListener('click', function(e) {
-            const btn = e.target.closest('.btn-counter');
-            if (btn) {
-                const key = btn.getAttribute('data-gc-id');
-                const url = btn.getAttribute('data-url');
-                
-                if (window.goatcounter && window.goatcounter.count) {
-                    window.goatcounter.count({
-                        path:  key,
-                        title: 'Download ' + key,
-                        event: true,
-                    });
-                }
-
-                // Délai très court pour laisser l'event partir avant la redirection
-                setTimeout(() => {
-                    window.location.href = url;
-                }, 150);
             }
-        });
+        }
     });
 </script>
-
+	
 <footer>
     <div class="container">
         <p><strong>Miroir Vidéo V3.7.0</strong></p>
