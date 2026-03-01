@@ -53,13 +53,14 @@
     }
     /* ------------------------------ */
     
-    header {
-        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-        color: white;
-        padding: 10px 10px;
-        text-align: center;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    }
+	header {
+    /* Dégradé allant de la couleur de l'image (bords) vers une couleur plus claire (centre) puis retour à la couleur de l'image */
+	background: radial-gradient(circle, var(--secondary) 0%, var(--primary) 100%);
+    color: white;
+    padding: 10px 10px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
     
     header h1 {
         font-size: 2.8em;
@@ -498,8 +499,9 @@
 
 <header>
 	<h1>
-		<img class="responsive" style="float: left; margin-left: 5px; margin-right: 5px;" src="https://jm-grelaud.github.io/miroir-video/MiroirVid%C3%A9o.png" alt="" width="118" height="150" />Miroir Vid&eacute;o
-		<img class="responsive" style="float: right; margin-left: 5px; margin-right: 5px;" src="https://jm-grelaud.github.io/miroir-video/MiroirVid%C3%A9o.png" alt="" width="118" height="150" />Miroir Vid&eacute;o
+		<img class="responsive" style="float: left; margin-left: 5px; margin-right: 5px;" src="https://jm-grelaud.github.io/miroir-video/MiroirVid%C3%A9o.png" alt="" width="118" height="150" />
+		Miroir Vid&eacute;o
+		<img class="responsive" style="float: right; margin-left: 5px; margin-right: 5px;" src="https://jm-grelaud.github.io/miroir-video/MiroirVid%C3%A9o.png" alt="" width="118" height="150" />
 	</h1>
 	<div class="version">Version 3.7.0 | Janvier 2026</div>
 	<p class="tagline">L'outil gratuit d'auto-analyse pour archers<br />Visualisez votre geste en temps diff&eacute;r&eacute;</p>
