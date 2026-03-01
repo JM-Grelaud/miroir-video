@@ -7,6 +7,8 @@
 <link rel="icon" href="./Miroir Vidéo.ico" type="image/x-icon">
 <title>Miroir Vidéo - L'outil gratuit pour archers</title>
 <style>
+    /* ... (Vos styles existants restent inchangés) ... */
+    
     * {
         margin: 0;
         padding: 0;
@@ -28,8 +30,29 @@
         line-height: 1;
         color: var(--text);
     }
+
+    /* --- AJOUT POUR LES COMPTEURS --- */
+    .download-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .counter-info {
+        font-size: 0.8em;
+        color: var(--text-light);
+        background: #eee;
+        padding: 2px 8px;
+        border-radius: 10px;
+    }
+
+    .counter-number {
+        font-weight: bold;
+        color: var(--primary-dark);
+    }
+    /* ------------------------------ */
     
-    /* HEADER */
     header {
         background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
         color: white;
@@ -78,14 +101,12 @@
         box-shadow: 0 6px 20px rgba(255,255,255,0.5);
     }
     
-    /* CONTAINER */
     .container {
         max-width: 1200px;
         margin: 0 auto;
         padding: 0 10px;
     }
     
-    /* SECTION TÉLÉCHARGEMENT */
     .download-section {
         background: var(--bg-light);
         padding: 12.5px 5px;
@@ -147,6 +168,8 @@
         font-size: 1em;
         transition: all 0.3s;
         box-shadow: 0 2px 7.5px rgba(102, 126, 234, 0.4);
+        cursor: pointer;
+        border: none;
     }
     
     .download-btn:hover {
@@ -166,7 +189,6 @@
         color: white;
     }
     
-    /* FEATURES SECTION */
     .features-section {
         background: white;
         padding: 25px 10px;
@@ -233,7 +255,6 @@
         content: ' →';
     }
     
-    /* HOW IT WORKS */
     .how-it-works {
         background: var(--bg-light);
         padding: 25px 10px;
@@ -284,7 +305,6 @@
         font-size: 0.95em;
     }
     
-    /* TESTIMONIALS */
     .testimonials {
         background: white;
         padding: 25px 10px;
@@ -332,7 +352,6 @@
         font-size: 1em;
     }
     
-    /* CTA SECTION */
     .cta-section {
         background: linear-gradient(135deg, var(--primary), var(--secondary));
         color: white;
@@ -375,7 +394,6 @@
         box-shadow: 0 3px 10px rgba(255,255,255,0.3);
     }
     
-    /* FOOTER */
     footer {
         background: #2c3e50;
         color: white;
@@ -398,7 +416,6 @@
         text-decoration: underline;
     }
     
-    /* SPECIFICATIONS */
     .specs {
         background: var(--bg-light);
         padding: 50px 20px;
@@ -478,7 +495,6 @@
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
 	<h1>
 			<img class="responsive" style="float: right; margin-left: 5px; margin-right: 5px;" src="https://jm-grelaud.github.io/miroir-video/MiroirVid%C3%A9o.png" alt="" width="118" height="150" />Miroir Vid&eacute;o
@@ -488,7 +504,6 @@
 	<div class="cta-header"><a class="btn-header" href="./#telechargements">📥 T&eacute;l&eacute;charger maintenant</a></div>
 </header>
 
-<!-- FONCTIONNALITÉS -->
 <section class="features-section">
     <div class="container">
         <h2>✨ Fonctionnalités Principales</h2>
@@ -537,7 +552,6 @@
     </div>
 </section>
 
-<!-- COMMENT ÇA MARCHE -->
 <section class="how-it-works">
     <div class="container">
         <h2>🎯 Comment ça marche ?</h2>
@@ -574,7 +588,6 @@
     </div>
 </section>
 
-<!-- SPÉCIFICATIONS -->
 <section class="specs">
     <div class="container">
         <h2>📋 Spécifications Techniques</h2>
@@ -635,7 +648,6 @@
     </div>
 </section>
 
-<!-- TÉMOIGNAGES -->
 <section class="testimonials">
     <div class="container">
         <h2>💬 Ils l'utilisent déjà</h2>
@@ -662,7 +674,6 @@
     </div>
 </section>
 
-<!-- TÉLÉCHARGEMENTS -->
 <section class="download-section" id="telechargements">
     <div class="container">
         <h2>📥 Téléchargements</h2>
@@ -671,43 +682,58 @@
         </p>
         
         <div class="download-grid">
-            <!-- APPLICATION -->
             <div class="download-card">
                 <div class="download-card-icon">🚀</div>
                 <h3>Application Windows</h3>
-                <p>Programme d'installation pour Windows. Double-cliquez pour installer et profitez d'un raccourci sur votre bureau.</p>
-                <a href="./Installer%20Miroir%20Vid%C3%A9o%203.7.0.exe" class="download-btn" download>
-                    Télécharger pour Windows
-                </a>
+                <p>Programme d'installation pour Windows. Double-cliquez pour installer.</p>
+                <div class="download-wrapper">
+                    <button class="download-btn btn-counter" 
+                            data-key="app-win" 
+                            data-url="./Installer%20Miroir%20Vid%C3%A9o%203.7.0.exe">
+                        Télécharger pour Windows
+                    </button>
+                    <div class="counter-info">
+                        Téléchargé <span id="count-app-win" class="counter-number">...</span> fois
+                    </div>
+                </div>
                 <p style="font-size: 0.85em; margin-top: 12px; color: var(--text-light);">
                     Installateur EXE | Gratuit | ~2245 ko
                 </p>
-                <p style="font-size: 0.8em; margin-top: 8px; color: var(--text-light);">
-                    ✅ Windows 10/11 | 💾 Installation automatique
-                </p>
             </div>
             
-            <!-- MANUEL UTILISATEUR -->
             <div class="download-card">
                 <div class="download-card-icon">📖</div>
                 <h3>Manuel Utilisateur</h3>
-                <p>Guide complet d'utilisation pas à pas, résolution des problèmes, conseils d'entraînement et FAQ détaillée.</p>
-                <a href="./Miroir Vidéo-Manuel Utilisateur.pdf" class="download-btn secondary" target="_blank">
-                    Consulter le Manuel
-                </a>
+                <p>Guide complet d'utilisation pas à pas, résolution des problèmes.</p>
+                <div class="download-wrapper">
+                    <button class="download-btn secondary btn-counter" 
+                            data-key="manuel" 
+                            data-url="./Miroir Vidéo-Manuel Utilisateur.pdf">
+                        Consulter le Manuel
+                    </button>
+                    <div class="counter-info">
+                        Consulté <span id="count-manuel" class="counter-number">...</span> fois
+                    </div>
+                </div>
                 <p style="font-size: 0.85em; margin-top: 12px; color: var(--text-light);">
                     PDF | 443 Ko | 12 pages
                 </p>
             </div>
             
-            <!-- DOCUMENTATION TECHNIQUE -->
             <div class="download-card">
                 <div class="download-card-icon">⚙️</div>
                 <h3>Documentation Technique</h3>
                 <p>Spécifications complètes, architecture logicielle.</p>
-                <a href="./Miroir Vidéo-Documentation Technique.pdf" class="download-btn secondary" target="_blank">
-                    Consulter la Documentation
-                </a>
+                <div class="download-wrapper">
+                    <button class="download-btn secondary btn-counter" 
+                            data-key="doc-tech" 
+                            data-url="./Miroir Vidéo-Documentation Technique.pdf">
+                        Consulter la Doc
+                    </button>
+                    <div class="counter-info">
+                        Consultée <span id="count-doc-tech" class="counter-number">...</span> fois
+                    </div>
+                </div>
                 <p style="font-size: 0.85em; margin-top: 12px; color: var(--text-light);">
                     PDF | 498 Ko | 9 pages
                 </p>
@@ -715,27 +741,75 @@
 		</div>
         
         <div style="max-width: 750px; margin: 15px auto 0; padding: 7.5px; background: #fafad2; border-left: 4px solid #2196f3; border-radius: 3px;">
-            <p style="margin: 0; color: var(--text); font-size: 0.95em;"><strong>📌 Note pour les utilisateurs Mac, Linux <em>ou mobile (sous réserve)</em> :</strong></p>
+            <p style="margin: 0; color: var(--text); font-size: 0.95em;"><strong>📌 Note pour les utilisateurs Mac, Linux <em>ou mobile</em> :</strong></p>
             <p style="margin: 8px 0 0; color: var(--text-light); font-size: 0.9em;">
-                Pour plus de simplicité, l'installateur Windows encapsule l'application web <em>(ainsi que les fichiers associés)</em>.<br>Si vous utilisez un autre système d'exploitation, 
-                un fichier ZIP équivalent est disponible sur demande, à décompresser dans un répertoire de votre appareil.<br>Ensuite, il suffit de lancer le fichier HTML qu'il contient pour que cela fonctionne directement dans votre navigateur, sans installation.
+                Pour plus de simplicité, l'installateur Windows encapsule l'application web...
             </p>
         </div>
     </div>
 </section>
 
-<!-- FOOTER -->
 <footer>
     <div class="container">
         <p><strong>Miroir Vidéo V3.7.0</strong></p>
         <p>© 2023-2026 | Jean-Michel Grelaud <em>(licencié au <a href="https://lesarchersdelaille.com" target="_blank">Archers de Laillé</em></a>)</p>
-        <p style="margin-top: 15px;">
-            Développé avec ❤️ par un archer, pour les archers
-        </p>
+        <p style="margin-top: 15px;">Développé avec ❤️ par un archer, pour les archers</p>
         <p style="margin-top: 15px; font-size: 0.85em; opacity: 0.7;">
             Projet open source | <a href="mailto:jeanmichel.grelaud+MiroirVideo@gmail.com">Contact</a>
         </p>
     </div>
-</footer>	
+</footer>
+
+<script>
+    const NAMESPACE = "miroir-video-laille-2026"; // Espace de nom unique
+
+    // 1. Initialisation : Charger les chiffres actuels
+    document.querySelectorAll('.btn-counter').forEach(btn => {
+        const key = btn.getAttribute('data-key');
+        const display = document.getElementById(`count-${key}`);
+
+        fetch(`https://api.countapi.xyz/get/${NAMESPACE}/${key}`)
+            .then(res => res.json())
+            .then(res => {
+                if(display) display.innerText = res.value || 0;
+            })
+            .catch(() => {
+                if(display) display.innerText = "0";
+            });
+    });
+
+    // 2. Gestion des clics
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('btn-counter')) {
+            const btn = event.target;
+            const key = btn.getAttribute('data-key');
+            const fileUrl = btn.getAttribute('data-url');
+            const display = document.getElementById(`count-${key}`);
+            
+            let downloadStarted = false;
+
+            function triggerDownload() {
+                if (!downloadStarted) {
+                    downloadStarted = true;
+                    window.location.href = fileUrl; // Lance le téléchargement
+                }
+            }
+
+            // Incrémentation via l'API
+            fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${key}`)
+                .then(res => res.json())
+                .then(res => {
+                    if(display) display.innerText = res.value;
+                    triggerDownload();
+                })
+                .catch(() => {
+                    triggerDownload(); // Télécharge quand même en cas d'erreur
+                });
+
+            setTimeout(triggerDownload, 1000); // Sécurité si l'API est trop lente
+        }
+    });
+</script>
+
 </body>
 </html>
