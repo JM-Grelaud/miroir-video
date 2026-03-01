@@ -753,28 +753,35 @@
         async src="//gc.zgo.at/count.js"></script>
 <script>
     window.addEventListener('load', function() {
-        const GC_CODE = "jgrmiroirvideo"; // Remplacez par votre code (ex: miroir-video)
+        const GC_CODE = "jgrmiroirvideo";
 
-        // 1. Récupérer et afficher les totaux depuis GoatCounter
+        // 1. Récupération des totaux avec gestion d'erreur CORS
         document.querySelectorAll('.counter-number').forEach(span => {
             const key = span.id.replace('count-', '');
-            // Appel à l'API publique de GoatCounter pour récupérer les clics sur l'ID
+            
+            // On ajoute no-cors ou on gère l'erreur pour éviter les messages rouges dans la console
             fetch(`https://${GC_CODE}.goatcounter.com/counter/${encodeURIComponent(key)}.json`)
-                .then(response => response.json())
-                .then(data => {
-                    span.innerText = data.count || 0;
+                .then(response => {
+                    if (!response.ok) throw new Error('CORS or Not Found');
+                    return response.json();
                 })
-                .catch(() => span.innerText = "0");
+                .then(data => {
+                    // On affiche le compte si disponible, sinon on garde le texte par défaut
+                    span.innerText = data.count || "0";
+                })
+                .catch(err => {
+                    console.log("Note: Affichage du compteur public restreint par la politique CORS.");
+                    span.innerText = "-"; // On affiche un tiret au lieu de "..." pour faire propre
+                });
         });
 
-        // 2. Gérer le clic et le téléchargement
+        // 2. Envoi du clic (Ceci fonctionne toujours, car c'est une balise <script> externe)
         document.addEventListener('click', function(e) {
-            if (e.target && e.target.classList.contains('btn-counter')) {
-                const btn = e.target;
+            const btn = e.target.closest('.btn-counter');
+            if (btn) {
                 const key = btn.getAttribute('data-gc-id');
                 const url = btn.getAttribute('data-url');
                 
-                // Envoyer l'événement à GoatCounter
                 if (window.goatcounter && window.goatcounter.count) {
                     window.goatcounter.count({
                         path:  key,
@@ -783,10 +790,10 @@
                     });
                 }
 
-                // Lancer le téléchargement après un court délai pour laisser l'event partir
+                // Délai très court pour laisser l'event partir avant la redirection
                 setTimeout(() => {
                     window.location.href = url;
-                }, 100);
+                }, 150);
             }
         });
     });
