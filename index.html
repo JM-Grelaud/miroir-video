@@ -688,12 +688,12 @@
                 <p>Programme d'installation pour Windows. Double-cliquez pour installer.</p>
                 <div class="download-wrapper">
                     <button class="download-btn btn-counter" 
-                            data-key="app-win" 
+                            data-gc-id="app-win" 
                             data-url="./Installer%20Miroir%20Vid%C3%A9o%203.7.0.exe">
                         Télécharger pour Windows
                     </button>
                     <div class="counter-info">
-                        Téléchargé <span id="count-app-win" class="counter-number">...</span> fois
+                        Téléchargé <span id="count-app-win" class="counter-number">0</span> fois
                     </div>
                 </div>
                 <p style="font-size: 0.85em; margin-top: 12px; color: var(--text-light);">
@@ -707,12 +707,12 @@
                 <p>Guide complet d'utilisation pas à pas, résolution des problèmes.</p>
                 <div class="download-wrapper">
                     <button class="download-btn secondary btn-counter" 
-                            data-key="manuel" 
+                            data-gc-id="manuel" 
                             data-url="./Miroir Vidéo-Manuel Utilisateur.pdf">
                         Consulter le Manuel
                     </button>
                     <div class="counter-info">
-                        Consulté <span id="count-manuel" class="counter-number">...</span> fois
+                        Consulté <span id="count-manuel" class="counter-number">0</span> fois
                     </div>
                 </div>
                 <p style="font-size: 0.85em; margin-top: 12px; color: var(--text-light);">
@@ -726,19 +726,19 @@
                 <p>Spécifications complètes, architecture logicielle.</p>
                 <div class="download-wrapper">
                     <button class="download-btn secondary btn-counter" 
-                            data-key="doc-tech" 
+                            data-gc-id="doc-tech" 
                             data-url="./Miroir Vidéo-Documentation Technique.pdf">
                         Consulter la Doc
                     </button>
                     <div class="counter-info">
-                        Consultée <span id="count-doc-tech" class="counter-number">...</span> fois
+                        Consultée <span id="count-doc-tech" class="counter-number">0</span> fois
                     </div>
                 </div>
                 <p style="font-size: 0.85em; margin-top: 12px; color: var(--text-light);">
                     PDF | 498 Ko | 9 pages
                 </p>
             </div>
-		</div>
+        </div>
         
         <div style="max-width: 750px; margin: 15px auto 0; padding: 7.5px; background: #fafad2; border-left: 4px solid #2196f3; border-radius: 3px;">
             <p style="margin: 0; color: var(--text); font-size: 0.95em;"><strong>📌 Note pour les utilisateurs Mac, Linux <em>ou mobile</em> :</strong></p>
@@ -748,6 +748,49 @@
         </div>
     </div>
 </section>
+
+<script data-goatcounter="https://jgrmiroirvideo.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+<script>
+    window.addEventListener('load', function() {
+        const GC_CODE = "VOTRE_CODE"; // Remplacez par votre code (ex: miroir-video)
+
+        // 1. Récupérer et afficher les totaux depuis GoatCounter
+        document.querySelectorAll('.counter-number').forEach(span => {
+            const key = span.id.replace('count-', '');
+            // Appel à l'API publique de GoatCounter pour récupérer les clics sur l'ID
+            fetch(`https://${GC_CODE}.goatcounter.com/counter/${encodeURIComponent(key)}.json`)
+                .then(response => response.json())
+                .then(data => {
+                    span.innerText = data.count || 0;
+                })
+                .catch(() => span.innerText = "0");
+        });
+
+        // 2. Gérer le clic et le téléchargement
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('btn-counter')) {
+                const btn = e.target;
+                const key = btn.getAttribute('data-gc-id');
+                const url = btn.getAttribute('data-url');
+                
+                // Envoyer l'événement à GoatCounter
+                if (window.goatcounter && window.goatcounter.count) {
+                    window.goatcounter.count({
+                        path:  key,
+                        title: 'Download ' + key,
+                        event: true,
+                    });
+                }
+
+                // Lancer le téléchargement après un court délai pour laisser l'event partir
+                setTimeout(() => {
+                    window.location.href = url;
+                }, 100);
+            }
+        });
+    });
+</script>
 
 <footer>
     <div class="container">
@@ -759,57 +802,5 @@
         </p>
     </div>
 </footer>
-
-<script>
-    const NAMESPACE = "JMG-miroir-video"; // Espace de nom unique
-
-    // 1. Initialisation : Charger les chiffres actuels
-    document.querySelectorAll('.btn-counter').forEach(btn => {
-        const key = btn.getAttribute('data-key');
-        const display = document.getElementById(`count-${key}`);
-
-        fetch(`https://api.countapi.xyz/get/${NAMESPACE}/${key}`)
-            .then(res => res.json())
-            .then(res => {
-                if(display) display.innerText = res.value || 0;
-            })
-            .catch(() => {
-                if(display) display.innerText = "0";
-            });
-    });
-
-    // 2. Gestion des clics
-    document.addEventListener('click', function(event) {
-        if (event.target.classList.contains('btn-counter')) {
-            const btn = event.target;
-            const key = btn.getAttribute('data-key');
-            const fileUrl = btn.getAttribute('data-url');
-            const display = document.getElementById(`count-${key}`);
-            
-            let downloadStarted = false;
-
-            function triggerDownload() {
-                if (!downloadStarted) {
-                    downloadStarted = true;
-                    window.location.href = fileUrl; // Lance le téléchargement
-                }
-            }
-
-            // Incrémentation via l'API
-            fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${key}`)
-                .then(res => res.json())
-                .then(res => {
-                    if(display) display.innerText = res.value;
-                    triggerDownload();
-                })
-                .catch(() => {
-                    triggerDownload(); // Télécharge quand même en cas d'erreur
-                });
-
-            setTimeout(triggerDownload, 1000); // Sécurité si l'API est trop lente
-        }
-    });
-</script>
-
 </body>
 </html>
