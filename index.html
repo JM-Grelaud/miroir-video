@@ -201,9 +201,10 @@
         color: var(--text);
     }
     
-    .features-grid {
+	.features-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        /* Force 3 colonnes égales */
+        grid-template-columns: repeat(3, 1fr); 
         gap: 10px;
     }
     
@@ -532,7 +533,7 @@
                 <h3>100% Privé</h3>
                 <p>Aucune vidéo enregistrée, aucune donnée transmise. Traitement 100% local dans votre navigateur.</p>
             </div>
-            
+
             <div class="feature-card">
                 <div class="feature-icon">🆓</div>
                 <h3>Totalement Gratuit</h3>
