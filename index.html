@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Miroir Vidéo - L'outil gratuit d'auto-analyse pour archers. Visualisez votre geste en temps différé.">
 <link rel="icon" href="./Miroir Vidéo.ico" type="image/x-icon">
 <title>Miroir Vidéo - L'outil gratuit pour archers</title>
@@ -493,6 +493,50 @@
             font-size: 1.6em;
         }
     }
+/* --- Optimisation Responsive --- */
+
+/* Conteneur principal : s'adapte à 95% de la largeur de l'écran au lieu d'une taille fixe */
+.container, #main-wrapper {
+    width: 95% !important;
+    max-width: 1200px; /* Limite la largeur sur les très grands écrans */
+    margin: 0 auto;
+    padding: 10px;
+}
+
+/* Vidéos et Canvas : s'adaptent à la largeur de leur parent */
+video, canvas {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100%;
+}
+
+/* Grille de mise en page : passe en colonne sur mobile */
+.d-flex {
+    flex-wrap: wrap; /* Permet aux éléments de passer à la ligne */
+}
+
+/* Ajustement des contrôles pour le tactile (plus grands et espacés) */
+button, .btn {
+    padding: 12px 20px !important;
+    margin-bottom: 8px;
+    width: 100%; /* Les boutons prennent toute la largeur sur petit écran */
+}
+
+/* Media Query spécifique pour les écrans de moins de 768px (Tablettes et Mobiles) */
+@media (max-width: 768px) {
+    .flex-md-row {
+        flex-direction: column !important;
+    }
+    
+    h1 {
+        font-size: 1.5rem !important;
+    }
+
+    .sidebar {
+        width: 100% !important;
+        position: relative !important;
+    }
+}
 </style>
 </head>
 <body>
