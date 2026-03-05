@@ -7,6 +7,8 @@
 <link rel="icon" href="./Miroir Vidéo.ico" type="image/x-icon">
 <title>Miroir Vidéo - L'outil gratuit pour archers</title>
 <style>
+    /* ... (Vos styles existants restent inchangés) ... */
+    
     * {
         margin: 0;
         padding: 0;
@@ -25,41 +27,45 @@
     
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        line-height: 1.4; /* Amélioré pour la lisibilité */
+        line-height: 1;
         color: var(--text);
     }
 
-    /* --- HEADER RESPONSIVE --- */
-    header {
-        background: radial-gradient(circle, var(--primary) 0%, var(--secondary) 100%);
-        color: white;
-        padding: 30px 15px;
-        text-align: center;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    }
-
-    /* Conteneur pour aligner les logos et le texte */
-    .header-title-container {
+    /* --- AJOUT POUR LES COMPTEURS --- */
+    .download-wrapper {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
-        gap: 20px;
-        flex-wrap: wrap; /* Permet l'empilement sur mobile */
-        margin-bottom: 15px;
+        gap: 8px;
     }
 
-    .logo-img {
-        max-width: 120px;
-        height: auto;
-        flex-shrink: 0;
+    .counter-info {
+        font-size: 0.8em;
+        color: var(--text-light);
+        background: #eee;
+        padding: 2px 8px;
+        border-radius: 10px;
     }
 
+    .counter-number {
+        font-weight: bold;
+        color: var(--primary-dark);
+    }
+    /* ------------------------------ */
+    
+	header {
+    /* Dégradé allant de la couleur de l'image (bords) vers une couleur plus claire (centre) puis retour à la couleur de l'image */
+	background: radial-gradient(circle, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+    padding: 10px 10px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+    
     header h1 {
-        font-size: clamp(1.8em, 8vw, 2.8em);
-        margin: 0;
+        font-size: 2.8em;
+        margin-bottom: 8px;
         text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        line-height: 1.1;
     }
     
     header .version {
@@ -69,12 +75,13 @@
     }
     
     header .tagline {
-        font-size: clamp(1em, 4vw, 1.2em);
+        font-size: 1.2em;
         margin-top: 12px;
         font-weight: 300;
-        max-width: 800px;
-        margin-left: auto;
-        margin-right: auto;
+    }
+    
+    header .cta-header {
+        margin-top: 25px;
     }
     
     header .btn-header {
@@ -87,7 +94,6 @@
         font-weight: bold;
         font-size: 1em;
         transition: all 0.3s;
-        margin-top: 25px;
         box-shadow: 0 4px 15px rgba(255,255,255,0.3);
     }
     
@@ -95,149 +101,679 @@
         transform: scale(1.05);
         box-shadow: 0 6px 20px rgba(255,255,255,0.5);
     }
-
-    /* --- CONTENU --- */
+    
     .container {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 0 15px;
+        padding: 0 10px;
     }
     
-    section { padding: 40px 0; }
-
-    .features-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 20px;
-        margin-bottom: 30px;
-    }
-    
-    .feature-card {
+	.download-section {
         background: var(--bg-light);
-        padding: 20px;
-        border-radius: 8px;
+        padding: 25px 10px; 
         text-align: center;
-        transition: transform 0.3s;
     }
-
-    .feature-icon { font-size: 2.5em; margin-bottom: 10px; }
-    .feature-card h3 { color: var(--primary); margin-bottom: 10px; }
-
-    /* --- TELECHARGEMENTS --- */
-    .download-section { background: var(--bg-light); text-align: center; }
+    
+    .download-section h2 {
+        font-size: 2em;
+        color: var(--text);
+        margin-bottom: 7.5px;
+    }
+    
     .download-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
-        margin-top: 20px;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 6px;
+        margin-top: 7.5px;
     }
     
     .download-card {
         background: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        padding: 7.5px 5px;
+        border-radius: 3px;
+        transition: all 0.3s;
+        border: 1px solid transparent;
     }
-
+    
+    .download-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12.5px rgba(0,0,0,0.12);
+        border-color: var(--primary);
+    }
+    
+    .download-card-icon {
+        font-size: 3em;
+        margin-bottom: 7.5px;
+    }
+    
+    .download-card h3 {
+        font-size: 1.4em;
+        margin-bottom: 6px;
+        color: var(--text);
+    }
+    
+    .download-card p {
+        color: var(--text-light);
+        margin-bottom: 10px;
+        font-size: 0.95em;
+    }
+    
     .download-btn {
         display: inline-block;
         background: linear-gradient(135deg, var(--primary), var(--secondary));
         color: white;
-        padding: 10px 20px;
+        padding: 6px 15px;
         border-radius: 25px;
         text-decoration: none;
         font-weight: bold;
-        margin: 10px 0;
+        font-size: 1em;
+        transition: all 0.3s;
+        box-shadow: 0 2px 7.5px rgba(102, 126, 234, 0.4);
+        cursor: pointer;
+        border: none;
     }
-
+    
+    .download-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 3px 10px rgba(102, 126, 234, 0.6);
+    }
+    
     .download-btn.secondary {
         background: white;
         color: var(--primary);
         border: 1px solid var(--primary);
+        box-shadow: none;
     }
-
-    /* --- RESPONSIVE MOBILE --- */
-    @media (max-width: 600px) {
-        .header-title-container {
-            flex-direction: column; /* Logos empilés sur mobile */
-            gap: 10px;
-        }
-        .logo-img {
-            max-width: 80px; /* Logos plus petits sur mobile */
-        }
-        section { padding: 25px 0; }
-        h2 { font-size: 1.5em; }
+    
+    .download-btn.secondary:hover {
+        background: var(--primary);
+        color: white;
     }
-
-    /* Vos styles spécifiques pour compteurs conservés */
-    .download-wrapper { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-    footer { background: #2c3e50; color: white; padding: 30px 15px; text-align: center; }
-    footer a { color: #3498db; text-decoration: none; }
+    
+    .features-section {
+        background: white;
+        padding: 25px 10px;
+    }
+    
+    .features-section h2 {
+        text-align: center;
+        font-size: 2em;
+        margin-bottom: 17.5px;
+        color: var(--text);
+    }
+    
+	.features-grid {
+        display: grid;
+        /* Force 3 colonnes égales */
+        grid-template-columns: repeat(3, 1fr); 
+        gap: 10px;
+    }
+    
+    .feature-card {
+        background: var(--bg-light);
+        padding: 12.5px 10px;
+        border-radius: 4px;
+        text-align: center;
+        transition: transform 0.3s;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 2px 87.px rgba(0,0,0,0.08);
+    }
+    
+    .feature-icon {
+        font-size: 2.5em;
+        margin-bottom: 6px;
+    }
+    
+    .feature-card h3 {
+        font-size: 1.3em;
+        margin-bottom: 5px;
+        color: var(--primary);
+    }
+    
+    .feature-card p {
+        color: var(--text-light);
+        font-size: 0.95em;
+    }
+    
+    .cta-link {
+        display: inline-block;
+        margin-top: 12.5px;
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 1em;
+        transition: all 0.3s;
+    }
+    
+    .cta-link:hover {
+        color: var(--primary-dark);
+        transform: scale(1.05);
+    }
+    
+    .cta-link::after {
+        content: ' →';
+    }
+    
+    .how-it-works {
+        background: var(--bg-light);
+        padding: 25px 10px;
+    }
+    
+    .how-it-works h2 {
+        text-align: center;
+        font-size: 2em;
+        margin-bottom: 17.5px;
+        color: var(--text);
+    }
+    
+    .steps {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+        gap: 15px;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .step {
+        text-align: center;
+        position: relative;
+    }
+    
+    .step-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 25px;
+        height: 25px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        border-radius: 50%;
+        font-size: 1.5em;
+        font-weight: bold;
+        margin-bottom: 7.5px;
+    }
+    
+    .step h3 {
+        font-size: 1.2em;
+        margin-bottom: 4px;
+        color: var(--text);
+    }
+    
+    .step p {
+        color: var(--text-light);
+        font-size: 0.95em;
+    }
+    
+    .testimonials {
+        background: white;
+        padding: 25px 10px;
+    }
+    
+    .testimonials h2 {
+        text-align: center;
+        font-size: 2em;
+        margin-bottom: 17.5px;
+        color: var(--text);
+    }
+    
+    .testimonials-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 10px;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .testimonial {
+        background: var(--bg-light);
+        padding: 10px;
+        border-radius: 4px;
+        border-left: 1px solid var(--primary);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    
+    .testimonial-text {
+        font-style: italic;
+        margin-bottom: 6px;
+        font-size: 0.95em;
+        color: var(--text);
+    }
+    
+    .testimonial-author {
+        color: var(--text-light);
+        font-weight: bold;
+        font-size: 0.9em;
+    }
+    
+    .testimonial-stars {
+        color: #ffc107;
+        margin-bottom: 4px;
+        font-size: 1em;
+    }
+    
+    .cta-section {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        padding: 25px 10px;
+        text-align: center;
+    }
+    
+    .cta-section h2 {
+        font-size: 2em;
+        margin-bottom: 7.5px;
+    }
+    
+    .cta-section p {
+        font-size: 1.1em;
+        margin-bottom: 15px;
+        opacity: 0.9;
+    }
+    
+    .cta-buttons {
+        display: flex;
+        gap: 7.5px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .cta-btn {
+        display: inline-block;
+        background: white;
+        color: var(--primary);
+        padding: 6px 17.5px;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 1em;
+        transition: all 0.3s;
+    }
+    
+    .cta-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 3px 10px rgba(255,255,255,0.3);
+    }
+    
+    footer {
+        background: #2c3e50;
+        color: white;
+        padding: 15px 10px;
+        text-align: center;
+    }
+    
+    footer p {
+        margin: 8px 0;
+        opacity: 0.9;
+        font-size: 0.95em;
+    }
+    
+    footer a {
+        color: #3498db;
+        text-decoration: none;
+    }
+    
+    footer a:hover {
+        text-decoration: underline;
+    }
+    
+    .specs {
+        background: var(--bg-light);
+        padding: 50px 20px;
+    }
+    
+    .specs h2 {
+        text-align: center;
+        font-size: 2em;
+        margin-bottom: 30px;
+        color: var(--text);
+    }
+    
+    .specs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 15px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .spec-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: white;
+        border-radius: 6px;
+    }
+    
+    .spec-icon {
+        font-size: 1.8em;
+    }
+    
+    .spec-text {
+        flex: 1;
+    }
+    
+    .spec-text strong {
+        display: block;
+        color: var(--text);
+        margin-bottom: 3px;
+        font-size: 0.95em;
+    }
+    
+    .spec-text span {
+        color: var(--text-light);
+        font-size: 0.85em;
+    }
+    
+    @media (max-width: 768px) {
+        header h1 {
+            font-size: 2em;
+        }
+        
+        header .tagline {
+            font-size: 1em;
+        }
+        
+        .download-grid, .features-grid, .steps, .testimonials-grid, .specs-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .cta-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        section {
+            padding: 16.5px 7.5px;
+        }
+        
+        h2 {
+            font-size: 1.6em;
+        }
+    }
 </style>
 </head>
 <body>
 
 <header>
-    <div class="container">
-        <div class="header-title-container">
-            <img class="logo-img" src="https://jm-grelaud.github.io/miroir-video/MiroirVid%C3%A9o.png" alt="Logo">
-            <h1>Miroir Vidéo</h1>
-            <img class="logo-img" src="https://jm-grelaud.github.io/miroir-video/MiroirVid%C3%A9o.png" alt="Logo">
-        </div>
-        <div class="version">Version 3.7.0 | Janvier 2026</div>
-        <p class="tagline">L'outil gratuit d'auto-analyse pour archers<br>Visualisez votre geste en temps différé</p>
-        <div class="cta-header">
-            <a class="btn-header" href="#telechargements">📥 Télécharger maintenant</a>
-        </div>
-    </div>
+	<h1>
+		<img class="responsive" style="float: left; margin-left: 5px; margin-right: 5px;" src="https://jm-grelaud.github.io/miroir-video/MiroirVid%C3%A9o.png" alt="" width="118" height="150" />
+		Miroir Vid&eacute;o
+		<img class="responsive" style="float: right; margin-left: 5px; margin-right: 5px;" src="https://jm-grelaud.github.io/miroir-video/MiroirVid%C3%A9o.png" alt="" width="118" height="150" />
+	</h1>
+	<div class="version">Version 3.7.0 | Janvier 2026</div>
+	<p class="tagline">L'outil gratuit d'auto-analyse pour archers<br />Visualisez votre geste en temps diff&eacute;r&eacute;</p>
+	<div class="cta-header"><a class="btn-header" href="./#telechargements">📥 T&eacute;l&eacute;charger maintenant</a></div>
 </header>
 
 <section class="features-section">
     <div class="container">
-        <h2 style="text-align: center; margin-bottom: 30px;">✨ Fonctionnalités Principales</h2>
+        <h2>✨ Fonctionnalités Principales</h2>
+        
         <div class="features-grid">
-            <div class="feature-card"><div class="feature-icon">⏱️</div><h3>Délai Réglable</h3><p>Choisissez un délai de 3 à 11 secondes.</p></div>
-            <div class="feature-card"><div class="feature-icon">🎨</div><h3>7 Couleurs de Grille</h3><p>Adaptez la grille à votre environnement.</p></div>
-            <div class="feature-card"><div class="feature-icon">📷</div><h3>Multi-Caméras</h3><p>Basculez entre vos différentes webcams.</p></div>
-            <div class="feature-card"><div class="feature-icon">🔒</div><h3>100% Privé</h3><p>Traitement local sans enregistrement.</p></div>
-            <div class="feature-card"><div class="feature-icon">🆓</div><h3>Totalement Gratuit</h3><p>Libre et sans publicité.</p></div>
-            <div class="feature-card"><div class="feature-icon">🖥️</div><h3>Installation Simple</h3><p>Auto-installateur Windows inclus.</p></div>
+            <div class="feature-card">
+                <div class="feature-icon">⏱️</div>
+                <h3>Délai Réglable</h3>
+                <p>Choisissez un délai de 3 à 11 secondes pour adapter l'outil à votre type d'entraînement.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>7 Couleurs de Grille</h3>
+                <p>Blanc, Jaune, Vert, Bleu, Rouge, Orange, Magenta : adaptez la grille à votre environnement.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📷</div>
+                <h3>Multi-Caméras</h3>
+                <p>Basculez facilement entre vos différentes webcams pour varier les angles de vue.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>100% Privé</h3>
+                <p>Aucune vidéo enregistrée, aucune donnée transmise. Traitement 100% local dans votre navigateur.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🆓</div>
+                <h3>Totalement Gratuit</h3>
+                <p>Pas d'abonnement, pas de publicité, pas de limitations. Libre et open source.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🖥️</div>
+                <h3>Installation Simple</h3>
+                <p>Programme d'installation Windows automatique. Double-clic et c'est installé ! Raccourci bureau inclus.<br><em>Il existe une alternative pour Mac et Linux.</em></p>
+            </div>
+        </div>
+        
+        <div style="text-align: center;">
+			<a href="./#telechargements" class="btn-header">📥 Télécharger maintenant</a>
         </div>
     </div>
 </section>
 
-<section class="download-section" id="telechargements">
+<section class="how-it-works">
+    <div class="container">
+        <h2>🎯 Comment ça marche ?</h2>
+        
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Installez</h3>
+                <p>Téléchargez l'installateur Windows et exécutez-le. L'installation est automatique et crée un raccourci bureau.<br><em>Il existe une alternative pour Mac et Linux.</em></p>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Positionnez</h3>
+                <p>Placez votre appareil face à votre pas de tir. Utilisez la grille pour vous cadrer parfaitement.</p>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Tirez</h3>
+                <p>Effectuez votre tir normalement, concentré sur votre cible et votre technique.</p>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">4</div>
+                <h3>Observez</h3>
+                <p>7 secondes après, votre geste s'affiche à l'écran. Analysez et corrigez !</p>
+            </div>
+        </div>
+        
+        <div style="text-align: center;">
+			<a href="./#telechargements" class="btn-header">📥 Télécharger maintenant</a>
+        </div>
+    </div>
+</section>
+
+<section class="specs">
+    <div class="container">
+        <h2>📋 Spécifications Techniques</h2>
+        
+        <div class="specs-grid">
+            <div class="spec-item">
+                <div class="spec-icon">💻</div>
+                <div class="spec-text">
+                    <strong>Système</strong>
+                    <span>Windows 10 / 11 (64 bits)</span>
+                </div>
+            </div>
+            
+            <div class="spec-item">
+                <div class="spec-icon">🌐</div>
+                <div class="spec-text">
+                    <strong>Navigateurs</strong>
+                    <span>Chrome, Firefox, Edge, Safari (récents)</span>
+                </div>
+            </div>
+            
+            <div class="spec-item">
+                <div class="spec-icon">📹</div>
+                <div class="spec-text">
+                    <strong>Résolution</strong>
+                    <span>Jusqu'à 1280x720 (HD) à 30 fps</span>
+                </div>
+            </div>
+            
+            <div class="spec-item">
+                <div class="spec-icon">💾</div>
+                <div class="spec-text">
+                    <strong>Taille</strong>
+                    <span>~5 Mo (installateur auto-extractible)</span>
+                </div>
+            </div>
+            
+            <div class="spec-item">
+                <div class="spec-icon">⚡</div>
+                <div class="spec-text">
+                    <strong>Performance</strong>
+                    <span>Fluide même sur matériel modeste</span>
+                </div>
+            </div>
+            
+            <div class="spec-item">
+                <div class="spec-icon">🔓</div>
+                <div class="spec-text">
+                    <strong>Licence</strong>
+                    <span>Open Source - Utilisation libre</span>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center;">
+			<a href="./#telechargements" class="btn-header">📥 Télécharger maintenant</a>
+        </div>
+    </div>
+</section>
+
+<section class="testimonials">
+    <div class="container">
+        <h2>💬 Ils l'utilisent déjà</h2>
+        
+        <div class="testimonials-grid">
+            <div class="testimonial">
+                <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text">"J'ai enfin compris pourquoi mon épaule remontait à chaque tir. Indispensable pour progresser en solo !"</p>
+                <p class="testimonial-author">— Christophe, Arc Classique</p>
+            </div>
+            
+            <div class="testimonial">
+                <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text">"Parfait pour mon entraînement à domicile. Simple, efficace, et gratuit. Que demander de plus ?"</p>
+                <p class="testimonial-author">— Isabelle, Arc Nu</p>
+            </div>
+            
+            <div class="testimonial">
+                <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text">"Outil créé pour notre club, nos jeunes adorent ! Un vrai plus pour nos séances d'entraînement."</p>
+                <p class="testimonial-author">— Club de Laillé</p>
+            </div>
+        </div>
+    </div><section class="download-section" id="telechargements">
     <div class="container">
         <h2>📥 Téléchargements</h2>
+        <p style="font-size: 1em; color: var(--text-light); margin-bottom: 20px;">
+            Tout ce dont vous avez besoin pour démarrer
+        </p>
+        
         <div class="download-grid">
             <div class="download-card">
                 <div class="download-card-icon">🚀</div>
                 <h3>Application Windows</h3>
+                <p>Programme d'installation pour Windows. Double-cliquez pour installer.</p>
                 <div class="download-wrapper">
-                    <a href="./Installer%20Miroir%20Vid%C3%A9o%203.7.0.exe" class="download-btn btn-counter" data-gc-id="app-win">Télécharger pour Windows</a>
+                    <a href="./Installer%20Miroir%20Vid%C3%A9o%203.7.0.exe" 
+                       class="download-btn btn-counter" 
+                       data-gc-id="app-win">
+                        Télécharger pour Windows
+                    </a>
                 </div>
+                <p style="font-size: 0.85em; margin-top: 12px; color: var(--text-light);">
+                    Installateur EXE | Gratuit | ~2245 ko
+                </p>
             </div>
+            
             <div class="download-card">
                 <div class="download-card-icon">📖</div>
-                <h3>Manuel</h3>
-                <a href="./Miroir Vidéo-Manuel Utilisateur.pdf" target="_blank" class="download-btn secondary">Consulter le Manuel</a>
+                <h3>Manuel Utilisateur</h3>
+                <p>Guide complet d'utilisation pas à pas, résolution des problèmes.</p>
+                <div class="download-wrapper">
+                    <a href="./Miroir Vidéo-Manuel Utilisateur.pdf" 
+                       target="_blank" 
+                       class="download-btn secondary btn-counter" 
+                       data-gc-id="manuel">
+                        Consulter le Manuel
+                    </a>
+                </div>
+                <p style="font-size: 0.85em; margin-top: 12px; color: var(--text-light);">
+                    PDF | 443 Ko | 12 pages
+                </p>
             </div>
+            
             <div class="download-card">
                 <div class="download-card-icon">⚙️</div>
-                <h3>Technique</h3>
-                <a href="./Miroir Vidéo-Documentation Technique.pdf" target="_blank" class="download-btn secondary">Consulter la Doc</a>
+                <h3>Documentation Technique</h3>
+                <p>Spécifications complètes, architecture logicielle.</p>
+                <div class="download-wrapper">
+                    <a href="./Miroir Vidéo-Documentation Technique.pdf" 
+                       target="_blank" 
+                       class="download-btn secondary btn-counter" 
+                       data-gc-id="doc-tech">
+                        Consulter la Doc
+                    </a>
+                </div>
+                <p style="font-size: 0.85em; margin-top: 12px; color: var(--text-light);">
+                    PDF | 498 Ko | 9 pages
+                </p>
             </div>
+        </div>
+        
+		<div style="max-width: 95%; margin: 15px auto 0; padding: 7.5px; background: #fafad2; border-left: 4px solid #2196f3; border-radius: 3px; text-align: center;">
+            <p style="margin: 0; color: var(--text); font-size: 1em;"><strong>📌 Note pour les utilisateurs Mac, Linux <em>ou mobile (sous réserve)</em> :</strong></p>
+            <p style="margin: 8px 0 0; color: var(--text-light); font-size: 1em;">
+                Pour plus de simplicité, l'installateur Windows encapsule l'application web <em>(ainsi que les fichiers associés)</em>.<br>Si vous utilisez un autre système d'exploitation, 
+                un fichier ZIP équivalent est disponible sur demande, à décompresser dans un répertoire de votre appareil.<br>Ensuite, il suffit de lancer le fichier HTML qu'il contient pour que cela fonctionne directement dans votre navigateur, sans installation.
+            </p>
         </div>
     </div>
 </section>
+	
+<script data-goatcounter="https://jgrmiroirvideo.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 
+<script>
+    document.addEventListener('click', function(e) {
+        // On cherche si on a cliqué sur un élément avec la classe btn-counter
+        const btn = e.target.closest('.btn-counter');
+        if (btn) {
+            const key = btn.getAttribute('data-gc-id');
+            
+            // Envoi de l'événement à GoatCounter
+            if (window.goatcounter && window.goatcounter.count) {
+                window.goatcounter.count({
+                    path: key,
+                    title: 'Clic: ' + key,
+                    event: true
+                });
+            }
+        }
+    });
+</script>
+	
 <footer>
     <div class="container">
         <p><strong>Miroir Vidéo V3.7.0</strong></p>
-        <p>© 2023-2026 | Jean-Michel Grelaud (licencié au <a href="https://lesarchersdelaille.com" target="_blank">Archers de Laillé</a>)</p>
-        <p style="font-size: 0.8em; opacity: 0.7; margin-top: 15px;">Projet open source | <a href="mailto:jeanmichel.grelaud+MiroirVideo@gmail.com">Contact</a></p>
+        <p>© 2023-2026 | Jean-Michel Grelaud <em>(licencié au <a href="https://lesarchersdelaille.com" target="_blank">Archers de Laillé</em></a>)</p>
+        <p style="margin-top: 15px;">Développé avec ❤️ par un archer, pour les archers</p>
+        <p style="margin-top: 15px; font-size: 0.85em; opacity: 0.7;">
+            Projet open source | <a href="mailto:jeanmichel.grelaud+MiroirVideo@gmail.com">Contact</a>
+        </p>
     </div>
 </footer>
-
 </body>
 </html>
