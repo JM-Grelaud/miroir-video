@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Miroir Vidéo</title>
+<style>
+	/*
+	 * ===============================================================
+	 * VARIABLES CSS GLOBALES
+	 * ===============================================================
+	 * Ces variables sont définies au niveau :root pour être accessibles
+	 * partout dans le document. Elles contiennent la version et le copyright
+	 * de l'application, permettant une mise à jour centralisée.
+	 */
+	:root {
+		--version: 'V3.7.0 (18/01/26)';
+		--copyright: '© 2023-2026 | Jean-Michel Grelaud | Archers de Laillé';
+	}
+
+	/*
+	 * INJECTION AUTOMATIQUE DES VARIABLES
+	 * Les pseudo-éléments ::after permettent d'injecter le contenu des variables
+	 * CSS directement dans le HTML sans JavaScript. Les classes .version-label
+	 * et .copyright-label afficheront automatiquement leur contenu respectif.
+	 */
+	.version-label::after { content: var(--version); }
+	.copyright-label::after { content: var(--copyright); }
+
+	/*
+	 * ===============================================================
+	 * STYLES DE BASE - CORPS DU DOCUMENT
+	 * ===============================================================
+	 * Configuration pour une application plein écran :
+	 * - margin/padding à 0 : supprime tous les espaces par défaut du navigateur
+	 * - height/width 100% : occupe tout l'espace disponible
+	 * - overflow hidden : empêche l'apparition de barres de défilement
+	 * - background-color black : évite les flashs blancs lors du chargement
+	 */
+	body, html { 
+		margin: 0; 
+		padding: 0; 
+		height: 100%; 
+		width: 100%; 
+		overflow: hidden; 
+		background-color: #000; 
+		font-family: Arial, sans-serif; 
+	}
+
+	/* Masquage des éléments de travail (video source et buffer de calcul) */
+	#video, #canvas-buffer { display: none; }
+
+	/* * Le canvas principal d'affichage.
+	 * object-fit: contain permet de garder les proportions de la vidéo sans déformation.
+	 * transform: scaleX(-1) crée l'effet miroir indispensable.
+	 */
+	#output-canvas { 
+		width: 100vw; 
+		height: 100vh; 
+		object-fit: contain; 
+		transform: scaleX(-1); 
+		display: block; 
+	}
+	
+	/* * LOADER (SÉQUENCE DE SYNCHRONISATION)
+	 * S'affiche pendant que le buffer se remplit avant que l'image ne s'anime.
+	 */
+	#loader { 
+		position: absolute; 
+		top: 50%; 
+		left: 50%; 
+		transform: translate(-50%, -50%); 
+		color: #aaa; 
+		font-size: 1.5em; 
+		text-align: center; 
+		z-index: 5; 
+		display: none; 
+	}
+
+	/* Animation du spinner de chargement */
+	.loader-spinner { 
+		display: inline-block; 
+		width: 40px; 
+		height: 40px; 
+		border: 4px solid rgba(255,255,255,0.3); 
+		border-radius: 50%; 
+		border-top-color: #fff; 
+		animation: spin 1s linear infinite; 
+		margin-bottom: 15px; 
+	}
+
+	@keyframes spin { to { transform: rotate(360deg); } }
+
+	/* * ÉCRAN D'ACCUEIL (SPLASH SCREEN)
+	 * Nécessaire car les navigateurs bloquent souvent la lecture automatique
+	 * de la vidéo sans une action utilisateur (clic).
+	 */
+	#splash-screen { 
+		position: fixed; 
+		top: 0; 
+		left: 0; 
+		width: 100vw; 
+		height: 100vh; 
+		background-color: #1a1a1a; 
+		color: white; 
+		display: flex; 
+		flex-direction: column; 
+		justify-content: center; 
+		align-items: center; 
+		z-index: 99999; 
+		transition: opacity 0.5s; 
+		cursor: default; 
+	}
+
+	#splash-logo { 
+		width: 250px; 
+		height: 317px; 
+		background: url('./MiroirVidéo.png') no-repeat center; 
+		background-size: contain; 
+		margin-bottom: 20px; 
+		border-radius: 20px; 
+		box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+	}
+	
+	/* État du bouton "Lancer" qui n'apparaît qu'une fois la caméra détectée */
+	#splash-status { 
+		display: none; 
+		margin-top: 30px; 
+		padding: 15px 30px; 
+		border-radius: 50px; 
+		font-weight: bold; 
+		background-color: #27ae60; 
+		animation: pulse 2s infinite; 
+	}
+
+	@keyframes pulse { 
+		0% { transform: scale(1); } 
+		50% { transform: scale(1.05); } 
+		100% { transform: scale(1); } 
+	}
+
+	/* Couche d'interface utilisateur au-dessus de la vidéo */
+	#ui-layer { 
+		position: absolute; 
+		top: 0; 
+		left: 0; 
+		width: 100%; 
+		height: 100%; 
+		pointer-events: none; 
+		z-index: 10; 
+	}
+
+	/* Barre d'informations basse */
+	#notice { 
+		position: absolute; 
+		bottom: 0; 
+		left: 0; 
+		width: 100%; 
+		background: rgba(30, 30, 30, 0.9); 
+		color: #ddd; 
+		padding: 10px 0; 
+		text-align: center; 
+		font-size: 12px; 
+		pointer-events: auto; 
+		border-top: 1px solid #444; 
+		box-shadow: 0 -4px 15px rgba(0,0,0,0.5);
+		letter-spacing: 0.5px;
+	}
+
+	#notice strong { color: #fff; } 
+	
+	/* Fenêtre modale du menu de configuration */
+	#menu-choix { 
+		display: none; 
+		position: absolute; 
+		top: 50%; 
+		left: 50%; 
+		transform: translate(-50%, -50%); 
+		background: #f0f0f0; 
+		border-radius: 8px; 
+		width: 90%;                    /* Responsive */
+		max-width: 400px;              /* Limite desktop */
+		max-height: 85vh;              /* Jamais plus de 85% hauteur */
+		pointer-events: auto; 
+		box-shadow: 0 0 20px #000; 
+		z-index: 100;
+		flex-direction: column;        /* Flexbox vertical */
+	}
+
+	#menu-content {
+		overflow-y: auto;              /* Scroll si nécessaire */
+		flex: 1;                       
+		max-height: calc(85vh - 100px);
+	}
+
+	/* Amélioration du scroll sur mobile */
+	#menu-content::-webkit-scrollbar {
+		width: 8px;
+	}
+
+	#menu-content::-webkit-scrollbar-track {
+		background: #e0e0e0;
+	}
+
+	#menu-content::-webkit-scrollbar-thumb {
+		background: #888;
+		border-radius: 4px;
+	}
+
+	#menu-content::-webkit-scrollbar-thumb:hover {
+		background: #555;
+	}
+
+	.menu-item { 
+		padding: 10px 8px;            /* Plus d'espace vertical */
+		border-bottom: 1px solid #ddd; 
+		cursor: pointer; 
+		color: #000;
+		line-height: 1.1;              /* Interligne augmenté */
+	}
+
+	.menu-item:hover { background: #e9ecef; }
+
+	.active { 
+		background: #d1e7dd; 
+		color: #0f5132;
+		font-weight: bold; 
+		border-left: 5px solid #198754;
+	}
+
+	/* Style pour les options de couleur avec prévisualisation */
+	.color-option {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.color-preview {
+		width: 20px;
+		height: 20px;
+		border-radius: 3px;
+		border: 1px solid #999;
+	}
+</style>
+</head>
+<body>
+
+<div id="loader">
+	<div class="loader-spinner"></div><br>
+	<span id="txt-loading">⏳ Synchronisation du temps...</span>
+</div>
+
+<div id="splash-screen">
+	<div id="splash-logo"></div>
+	<h1 style="margin:0; font-size:2.5em; text-shadow: 2px 2px 4px #000;">Miroir Vidéo</h1>
+	<h3 style="opacity:0.7; font-weight:normal; margin-top:5px;">Version <span class="version-label"></span></h3>
+	<p style="margin-top:20px; font-size:0.9em; opacity:0.6;" class="copyright-label"></p>
+	<div id="splash-status">CLIQUEZ POUR LANCER</div>
+</div>
+
+<video id="video" autoplay playsinline></video>
+<canvas id="canvas-buffer"></canvas>
+<canvas id="output-canvas"></canvas>
+
+<div id="ui-layer">
+	<div id="notice">Initialisation...</div>
+	<div id="menu-choix">
+		<div class="menu-item menu-header" style="background:#333; color:#fff; text-align:center; border:none; border-top-left-radius:8px; border-top-right-radius:8px;">
+			CONFIGURATION
+		</div>
+		<div id="menu-content"></div>
+		<div class="menu-item menu-footer" style="background:#333; color:#fff; text-align:center; border:none; border-bottom-left-radius:8px; border-bottom-right-radius:8px;" onclick="toggleMenu(false)">
+			FERMER
+		</div>
+	</div>
+</div>
+
+<script>
+	/*
+	 * ===============================================================
+	 * CONFIGURATION ET ÉTAT GLOBAL
+	 * ===============================================================
+	 */
+	const config = { 
+		delayMs: 7000,           // Délai de retard par défaut (ms)
+		currentDeviceId: null,   // ID technique de la caméra utilisée
+		currentDeviceLabel: "Recherche...",
+		gridColor: "rgba(255, 255, 0, 0.5)" // Couleur de la grille de visée
+	};
+	
+	// Palette de couleurs disponibles pour la grille
+	const gridColors = {
+		'Blanc': 'rgba(255, 255, 255, 0.5)',
+		'Jaune': 'rgba(255, 255, 0, 0.5)',
+		'Vert': 'rgba(0, 255, 0, 0.5)',
+		'Bleu': 'rgba(0, 150, 255, 0.5)',
+		'Rouge': 'rgba(255, 0, 0, 0.5)',
+		'Orange': 'rgba(255, 165, 0, 0.5)',
+		'Magenta': 'rgba(255, 0, 255, 0.5)'
+	};
+
+	// Stockage des textes dynamiques récupérés du CSS
+	const styleVars = { version: '', copyright: '' };
+
+	// Références DOM
+	const video = document.getElementById('video');
+	const bufferCanvas = document.getElementById('canvas-buffer');
+	const outputCanvas = document.getElementById('output-canvas');
+	const bufferCtx = bufferCanvas.getContext('2d', { alpha: false, willReadFrequently: true });
+	const outputCtx = outputCanvas.getContext('2d', { alpha: false });
+	
+	const splash = document.getElementById('splash-screen');
+	const splashStatus = document.getElementById('splash-status');
+	const loader = document.getElementById('loader');
+	const notice = document.getElementById('notice');
+
+	// Logique de flux
+	let frameStack = [];         // Pile stockant les images et leurs timestamps
+	let isBuffering = true;      // État de remplissage initial du buffer
+	let cameraReady = false;     // État de disponibilité de la caméra
+	let lastDrawnFrame = null;   // Dernière image affichée pour éviter les redessins inutiles
+	let loaderInterval = null;   // Intervalle du compteur de synchronisation
+
+	/*
+	 * ===============================================================
+	 * RÉCUPÉRATION DES VARIABLES CSS
+	 * ===============================================================
+	 */
+	function initStyleVars() {
+		const style = getComputedStyle(document.documentElement);
+		styleVars.version = style.getPropertyValue('--version').replace(/'/g, "").trim();
+		styleVars.copyright = style.getPropertyValue('--copyright').replace(/'/g, "").trim();
+	}
+
+	/*
+	 * ===============================================================
+	 * MISE À JOUR DE LA BARRE D'INFOS (NOTICE)
+	 * ===============================================================
+	 */
+	function updateNotice() {
+		// Trouver le nom de la couleur active
+		let colorName = 'Jaune';
+		for (const [name, value] of Object.entries(gridColors)) {
+			if (value === config.gridColor) {
+				colorName = name;
+				break;
+			}
+		}
+		
+		notice.innerHTML = `<strong>Miroir Vidéo ${styleVars.version}</strong> &nbsp;|&nbsp; ${styleVars.copyright} &nbsp;|&nbsp; <strong>📷 Caméra : </strong>${config.currentDeviceLabel} &nbsp;|&nbsp; <strong>⏱️ Délai : </strong>${config.delayMs/1000}s &nbsp;|&nbsp; <strong>🎨 Grille : </strong>${colorName} &nbsp;|&nbsp; <strong>[Clic]</strong> Menu &nbsp;|&nbsp; <strong>[Ctrl][Q] Quitter</strong>`;
+	}
+
+	/*
+	 * ===============================================================
+	 * GESTIONNAIRE : LANCEMENT DE LA CAMÉRA
+	 * ===============================================================
+	 * Demande l'accès à la caméra avec les contraintes spécifiées.
+	 */
+	async function startCamera(id = null) {
+		// Détection du type d'appareil
+		const userAgent = navigator.userAgent;
+		const isPC = () => {
+			return /Windows|Macintosh|Linux/.test(userAgent) &&
+				   !/Mobile|Tablet|Android|iOS|iPhone|iPad/.test(userAgent);
+		};
+
+		try {
+			// Arrêt du flux existant si nécessaire
+			if (video.srcObject) {
+				video.srcObject.getTracks().forEach(t => t.stop());
+			}
+			
+			// Configuration de base des contraintes
+			let videoConstraints = { 
+				width: { ideal: 1280 },
+				height: { ideal: 720 },              
+				frameRate: { ideal: 30, max: 30 }
+			};
+
+			// Logique de sélection :
+			if (id) {
+				// Si l'utilisateur a choisi une caméra spécifique dans le menu
+				videoConstraints.deviceId = { exact: id };
+			} else if (!isPC()) {
+				// Si c'est un MOBILE et qu'aucune caméra n'est sélectionnée :
+				// On force la caméra AVANT (user)
+				videoConstraints.facingMode = { exact: "user" }; 
+			}
+			
+			const constraints = { video: videoConstraints };
+
+			const stream = await navigator.mediaDevices.getUserMedia(constraints);
+			video.srcObject = stream;
+			
+			video.onloadedmetadata = () => {
+				// Ajustement de la taille des canvas
+				outputCanvas.width = bufferCanvas.width = video.videoWidth;
+				outputCanvas.height = bufferCanvas.height = video.videoHeight;
+				
+				// Mise à jour des infos de la caméra active
+				const videoTrack = stream.getVideoTracks()[0];
+				config.currentDeviceId = videoTrack.getSettings().deviceId;
+				config.currentDeviceLabel = videoTrack.label || "Caméra avant";
+				
+				cameraReady = true;
+				splashStatus.style.display = 'block';
+				splash.style.cursor = 'pointer';
+
+				updateNotice();
+
+				// Réinitialisation du buffer
+				frameStack = [];
+				lastDrawnFrame = null;
+				isBuffering = true;
+				
+				if (!window.loopStarted) { 
+					window.loopStarted = true; 
+					requestAnimationFrame(loop); 
+				}
+			};
+		} catch (e) { 
+			notice.innerText = "⚠️ Erreur caméra : " + e.message; 
+			cameraReady = false;
+		}
+	}
+
+	/*
+	 * ===============================================================
+	 * BOUCLE DE RENDU PRINCIPALE
+	 * ===============================================================
+	 * Gère la capture, le stockage et l'affichage différé.
+	 */
+	function loop() {
+		requestAnimationFrame(loop);
+		
+		if (video.readyState === video.HAVE_ENOUGH_DATA) {
+			const now = Date.now();
+			
+			// 1. Capture de la frame actuelle dans le buffer
+			bufferCtx.drawImage(video, 0, 0, bufferCanvas.width, bufferCanvas.height);
+			const imageData = bufferCtx.getImageData(0, 0, bufferCanvas.width, bufferCanvas.height);
+			frameStack.push({ data: imageData, time: now });
+
+			// 2. Calcul du moment théorique de l'image à afficher
+			const targetTime = now - config.delayMs;
+
+			// 3. Nettoyage des anciennes images inutiles (antérieures à targetTime)
+			while (frameStack.length > 1 && frameStack[1].time < targetTime) {
+				frameStack.shift();
+			}
+
+			// 4. Affichage de l'image si le délai est atteint
+			if (frameStack[0].time <= targetTime) {
+				if (frameStack[0] !== lastDrawnFrame) {
+					// Masquage automatique des loaders au premier affichage
+					if (isBuffering) {
+						isBuffering = false;
+						splash.style.display = 'none';
+						loader.style.display = 'none';
+						if (loaderInterval) {
+							clearInterval(loaderInterval);
+							loaderInterval = null;
+						}
+					}
+					
+					// Rendu de l'image différée
+					outputCtx.putImageData(frameStack[0].data, 0, 0);
+					
+					// Ajout de la grille de visée
+					drawGrid();
+					
+					lastDrawnFrame = frameStack[0];
+				}
+			}
+		}
+	}
+
+	/* Dessine une règle des tiers pour l'aide au cadrage */
+	function drawGrid() {
+		const w = outputCanvas.width;
+		const h = outputCanvas.height;
+		outputCtx.strokeStyle = config.gridColor;
+		outputCtx.lineWidth = 2;
+		outputCtx.beginPath();
+		
+		// Lignes verticales
+		for(let i=1; i<3; i++) {
+			outputCtx.moveTo((w/3)*i, 0);
+			outputCtx.lineTo((w/3)*i, h);
+		}
+		// Lignes horizontales
+		for(let i=1; i<3; i++) {
+			outputCtx.moveTo(0, (h/3)*i);
+			outputCtx.lineTo(w, (h/3)*i);
+		}
+		outputCtx.stroke();
+	}
+
+	/*
+	 * ===============================================================
+	 * GESTION DU MENU DE CONFIGURATION
+	 * ===============================================================
+	 */
+	/*
+	 * ===============================================================
+	 * CSS À AJOUTER POUR LE MENU RESPONSIVE
+	 * ===============================================================
+	 * Remplacer le style #menu-choix existant par celui-ci :
+	 */
+	const cssToAdd = `
+	#menu-choix { 
+		display: none; 
+		position: absolute; 
+		top: 50%; 
+		left: 50%; 
+		transform: translate(-50%, -50%); 
+		background: #f0f0f0; 
+		border-radius: 8px; 
+		width: 90%;                    /* Largeur relative sur petits écrans */
+		max-width: 400px;              /* Limite sur grands écrans */
+		max-height: 85vh;              /* Ne dépasse jamais 85% de la hauteur */
+		pointer-events: auto; 
+		box-shadow: 0 0 20px #000; 
+		z-index: 100;
+		display: flex;                 /* Flexbox pour gérer le scroll */
+		flex-direction: column;
+	}
+
+	/* Container scrollable pour le contenu du menu */
+	#menu-content {
+		overflow-y: auto;              /* Active le scroll vertical si nécessaire */
+		flex: 1;                       /* Prend tout l'espace disponible */
+		max-height: calc(85vh - 100px); /* Hauteur max moins header/footer */
+	}
+
+	/* Amélioration du scroll sur mobile */
+	#menu-content::-webkit-scrollbar {
+		width: 8px;
+	}
+
+	#menu-content::-webkit-scrollbar-track {
+		background: #e0e0e0;
+	}
+
+	#menu-content::-webkit-scrollbar-thumb {
+		background: #888;
+		border-radius: 4px;
+	}
+
+	#menu-content::-webkit-scrollbar-thumb:hover {
+		background: #555;
+	}
+
+	/* Headers et footer fixes (ne scrollent pas) */
+	.menu-header, .menu-footer {
+		flex-shrink: 0;  /* Ne se réduit jamais */
+	}
+	`;
+
+	/*
+	 * ===============================================================
+	 * FONCTION : toggleMenu (VERSION RESPONSIVE)
+	 * ===============================================================
+	 * Affiche ou masque le menu de configuration avec adaptation automatique
+	 * à la taille de l'écran (de 600px à 1080px+ de hauteur).
+	 * 
+	 * AMÉLIORATIONS :
+	 * - Menu scrollable si le contenu dépasse la hauteur disponible
+	 * - Header et footer fixes, seul le contenu scroll
+	 * - Adaptation automatique pour mobile (petits écrans)
+	 * - Largeur responsive (90% sur mobile, max 400px sur desktop)
+	 * - Hauteur maximale de 85vh pour ne jamais déborder
+	 * 
+	 * STRUCTURE HTML DU MENU :
+	 * <div id="menu-choix">
+	 *   <div class="menu-header">CONFIGURATION</div>
+	 *   <div id="menu-content">
+	 *     <!-- Contenu scrollable ici -->
+	 *   </div>
+	 *   <div class="menu-footer">FERMER</div>
+	 * </div>
+	 */
+	async function toggleMenu(show) {
+		const menu = document.getElementById('menu-choix');
+		
+		// Si show = false, masque simplement le menu
+		if (!show) { 
+			menu.style.display = 'none'; 
+			return; 
+		}
+		
+		// Récupère la liste de tous les périphériques média
+		const devices = await navigator.mediaDevices.enumerateDevices();
+		
+		/*
+		 * CONSTRUCTION DU HTML RESPONSIVE
+		 * Le contenu est injecté uniquement dans #menu-content
+		 * qui est le seul élément scrollable.
+		 */
+		let html = '';
+		
+		// ===== SECTION CAMÉRAS =====
+		html += '<div style="padding:10px; background:#ddd; font-weight:bold; font-size:12px; color:#000; position:sticky; top:0; z-index:1;">CHOIX DE LA CAMÉRA</div>';
+		
+		// Liste des caméras disponibles
+		devices.filter(d => d.kind === 'videoinput').forEach(d => {
+			const isActive = (d.label === config.currentDeviceLabel) ? 'active' : '';
+			html += `<div class="menu-item ${isActive}" onclick="changeCam('${d.deviceId}')">${d.label || 'Caméra inconnue'}</div>`;
+		});
+		
+		// ===== SECTION DÉLAIS =====
+		html += '<div style="padding:10px; background:#ddd; font-weight:bold; font-size:12px; color:#000; margin-top:10px; position:sticky; top:0; z-index:1;">RÉGLAGE DU DÉLAI</div>';
+		
+		// Liste des délais prédéfinis
+		[3, 5, 7, 9, 11].forEach(s => {
+			const isActive = (s === (config.delayMs/1000)) ? 'active' : '';
+			html += `<div class="menu-item ${isActive}" onclick="changeDelay(${s})">${s} secondes</div>`;
+		});
+		
+		// ===== SECTION COULEURS DE GRILLE =====
+		html += '<div style="padding:10px; background:#ddd; font-weight:bold; font-size:12px; color:#000; margin-top:10px; position:sticky; top:0; z-index:1;">COULEUR DE LA GRILLE</div>';
+		
+		// Liste des couleurs disponibles avec aperçu
+		for (const [name, value] of Object.entries(gridColors)) {
+			const isActive = (value === config.gridColor) ? 'active' : '';
+			html += `<div class="menu-item ${isActive}" onclick="changeGridColor('${value}')">
+				<div class="color-option">
+					<div class="color-preview" style="background:${value}"></div>
+					<span>${name}</span>
+				</div>
+			</div>`;
+		}
+		
+		// Injection du HTML dans le container scrollable
+		document.getElementById('menu-content').innerHTML = html;
+		
+		// Affichage du menu avec style flex (défini dans le CSS)
+		menu.style.display = 'flex';
+		
+		/*
+		 * AJUSTEMENT DYNAMIQUE (optionnel)
+		 * Si on veut calculer dynamiquement la hauteur maximale :
+		 */
+		adjustMenuHeight();
+	}
+
+	/*
+	 * ===============================================================
+	 * FONCTION : adjustMenuHeight (OPTIONNELLE)
+	 * ===============================================================
+	 * Ajuste dynamiquement la hauteur du menu en fonction de
+	 * la hauteur réelle de la fenêtre.
+	 * 
+	 * Utile pour :
+	 * - Écrans très petits (< 600px)
+	 * - Mode paysage sur mobile
+	 * - Changements d'orientation
+	 */
+	function adjustMenuHeight() {
+		const menu = document.getElementById('menu-choix');
+		const menuContent = document.getElementById('menu-content');
+		const windowHeight = window.innerHeight;
+		
+		// Calcul de la hauteur maximale disponible
+		// 85% de la hauteur de fenêtre moins header (50px) et footer (50px)
+		const maxContentHeight = (windowHeight * 0.85) - 100;
+		
+		// Application de la hauteur maximale
+		menuContent.style.maxHeight = `${maxContentHeight}px`;
+		
+		// Sur très petits écrans (< 600px), on peut augmenter le pourcentage
+		if (windowHeight < 600) {
+			menuContent.style.maxHeight = `${windowHeight * 0.75}px`;
+		}
+	}
+
+	/*
+	 * ===============================================================
+	 * ÉCOUTEUR : REDIMENSIONNEMENT DE FENÊTRE
+	 * ===============================================================
+	 * Réajuste le menu si la fenêtre est redimensionnée
+	 * ou si l'orientation change (mobile).
+	 */
+	window.addEventListener('resize', () => {
+		const menu = document.getElementById('menu-choix');
+		// Ne réajuster que si le menu est visible
+		if (menu.style.display === 'flex') {
+			adjustMenuHeight();
+		}
+	});
+
+	/*
+	 * ===============================================================
+	 * MODIFICATION HTML NÉCESSAIRE
+	 * ===============================================================
+	 * Dans votre HTML, modifier la structure du menu comme suit :
+	 */
+	const htmlStructure = `
+	<div id="menu-choix">
+		<!-- Header fixe -->
+		<div class="menu-item menu-header" style="background:#333; color:#fff; text-align:center; border:none; border-top-left-radius:8px; border-top-right-radius:8px;">
+			CONFIGURATION
+		</div>
+		
+		<!-- Contenu scrollable -->
+		<div id="menu-content"></div>
+		
+		<!-- Footer fixe -->
+		<div class="menu-item menu-footer" style="background:#333; color:#fff; text-align:center; border:none; border-bottom-left-radius:8px; border-bottom-right-radius:8px;" onclick="toggleMenu(false)">
+			FERMER
+		</div>
+	</div>
+	`;
+
+	/**
+	 * Affiche le loader central avec un compteur de secondes.
+	 * Utilisé lors du remplissage initial ou du changement de délai.
+	 */
+	function showLoaderWithCounter() {
+		loader.style.display = 'block';
+		if (loaderInterval) clearInterval(loaderInterval);
+		
+		let secondsElapsed = 0;
+		document.getElementById('txt-loading').textContent = `⏳ Synchronisation : ${secondsElapsed}s / ${config.delayMs/1000}s`;
+		
+		loaderInterval = setInterval(() => {
+			secondsElapsed++;
+			document.getElementById('txt-loading').textContent = `⏳ Synchronisation : ${secondsElapsed}s / ${config.delayMs/1000}s`;
+			
+			// Sécurité pour stopper le timer si le loader est masqué ailleurs
+			if (!isBuffering || loader.style.display === 'none') {
+				clearInterval(loaderInterval);
+				loaderInterval = null;
+			}
+		}, 1000);
+	}
+
+	/*
+	 * ===============================================================
+	 * ACTIONS DE MODIFICATION (CAMÉRA / DÉLAI / COULEUR GRILLE)
+	 * ===============================================================
+	 */
+	window.changeCam = (id) => { 
+		frameStack = [];
+		lastDrawnFrame = null;
+		isBuffering = true;
+		startCamera(id);
+		toggleMenu(false);
+		showLoaderWithCounter();
+	};
+
+	window.changeDelay = (s) => { 
+		config.delayMs = s * 1000;
+		frameStack = [];
+		lastDrawnFrame = null;
+		isBuffering = true;
+		updateNotice();
+		toggleMenu(false);
+		showLoaderWithCounter();
+	};
+	
+	window.changeGridColor = (color) => {
+		config.gridColor = color;
+		updateNotice();
+		toggleMenu(false);
+		// Pas besoin de rebuffering pour un changement de couleur
+	};
+
+	/*
+	 * ===============================================================
+	 * GESTIONNAIRE : CLIC SUR SPLASH SCREEN
+	 * ===============================================================
+	 * Déclenche le mode plein écran et démarre l'application.
+	 */
+	splash.addEventListener('click', () => {
+		if (!cameraReady) return;
+		
+		// Demande de plein écran (peut être refusée par le navigateur)
+		document.documentElement.requestFullscreen().catch(() => {});
+		
+		// Lance l'animation de disparition (transition CSS)
+		splash.style.opacity = '0';
+		
+		// Affiche le loader AVEC COMPTEUR si on est encore en train de bufferiser
+		if (isBuffering) {
+			showLoaderWithCounter();
+		}
+		
+		// Masque le splash après l'animation (500ms) si buffering terminé
+		setTimeout(() => { 
+			if(!isBuffering) splash.style.display = 'none'; 
+		}, 500);
+	});
+
+	/*
+	 * ===============================================================
+	 * GESTIONNAIRE : CLIC SUR CANVAS
+	 * ===============================================================
+	 * Ouvre le menu de configuration quand on clique sur le canvas de sortie.
+	 */
+	outputCanvas.addEventListener('click', () => toggleMenu(true));
+
+	/*
+	 * ===============================================================
+	 * RACCOURCIS CLAVIER
+	 * ===============================================================
+	 */
+	window.addEventListener('keydown', (e) => {
+		// CTRL + Q pour "Quitter" (ferme l'application proprement)
+		if (e.ctrlKey && (e.key === 'q' || e.key === 'Q')) {
+			e.preventDefault();
+			window.close();
+			splash.style.display = 'flex';
+			splash.style.opacity = '1';
+			splash.innerHTML = "<div style='text-align:center'><h1>Application fermée</h1><p>Vous pouvez fermer cet onglet.</p></div>";
+		}
+	});
+
+	/*
+	 * ===============================================================
+	 * INITIALISATION DE L'APPLICATION
+	 * ===============================================================
+	 * Séquence de démarrage :
+	 * 1. Charge les variables CSS en cache
+	 * 2. Démarre la caméra par défaut
+	 * * La boucle de rendu démarre automatiquement dans startCamera()
+	 */
+	initStyleVars();
+	startCamera();
+</script>
+</body>
+</html>
